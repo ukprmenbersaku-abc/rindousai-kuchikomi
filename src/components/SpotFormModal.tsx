@@ -1,0 +1,155 @@
+/**
+ * @license
+ * SPDX-License-Identifier: Apache-2.0
+ */
+
+import React, { useState } from 'react';
+import { Spot } from '../types';
+import { X, Save, Crosshair, MapPin } from 'lucide-react';
+
+interface SpotFormModalProps {
+  x: number;
+  y: number;
+  onClose: () => void;
+  onSave: (spot: Omit<Spot, 'id'>) => void;
+}
+
+export default function SpotFormModal({ x, y, onClose, onSave }: SpotFormModalProps) {
+  const [name, setName] = useState('');
+  const [description, setDescription] = useState('');
+  const [category, setCategory] = useState<'stage' | 'exhibition' | 'food_shop' | 'event'>('stage');
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!name.trim()) return;
+
+    setIsSubmitting(true);
+    onSave({
+      name: name.trim(),
+      x,
+      y,
+      description: description.trim(),
+      category,
+    });
+    setIsSubmitting(false);
+  };
+
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-neutral-900/40 backdrop-blur-sm p-4 overflow-y-auto">
+      <div className="w-full max-w-lg bg-white rounded-[32px] border border-neutral-100 shadow-[0_24px_50px_rgba(0,0,0,0.12)] p-8 relative animate-scale-up">
+        
+        {/* Close Button */}
+        <button
+          onClick={onClose}
+          className="absolute top-6 right-6 p-2 rounded-full text-neutral-400 hover:text-neutral-700 hover:bg-neutral-50 transition-all duration-200"
+        >
+          <X className="w-5 h-5" />
+        </button>
+
+        {/* Modal Header */}
+        <div className="flex items-center gap-3 mb-6">
+          <div className="w-10 h-10 rounded-2xl bg-indigo-50 border border-indigo-200/50 flex items-center justify-center text-indigo-600">
+            <MapPin className="w-5 h-5" />
+          </div>
+          <div>
+            <h3 className="text-xl font-bold text-neutral-800">
+              企画・ブーススポットの配置
+            </h3>
+            <p className="text-xs text-neutral-400 mt-0.5">
+              選択した会場内の座標に、ユーザーが口コミ投稿できる展示や模擬店のスポットを新しく作成します
+            </p>
+          </div>
+        </div>
+
+        {/* Selected Coordinates Status Badge */}
+        <div className="mb-6 flex items-center gap-2 bg-neutral-50 border border-neutral-200/40 px-3.5 py-2 rounded-xl text-neutral-600 font-mono text-xs">
+          <Crosshair className="w-3.5 h-3.5 text-neutral-400 animate-pulse" />
+          <span>配置座標 (比率%): </span>
+          <span className="font-bold text-indigo-600">X: {x}%</span>
+          <span className="text-neutral-300">|</span>
+          <span className="font-bold text-indigo-600">Y: {y}%</span>
+        </div>
+
+        {/* Input Form */}
+        <form onSubmit={handleSubmit} className="space-y-4">
+          <div>
+            <label className="block text-xs font-bold text-neutral-600 uppercase tracking-wider mb-2">
+              スポット名/場所名 <span className="text-red-500">*</span>
+            </label>
+            <input
+              type="text"
+              required
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              placeholder="例: 第1体育館 (メインステージ)、3F 2-A教室など"
+              className="w-full px-4 py-3 rounded-xl border border-neutral-200 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 text-sm placeholder-neutral-400 transition-all duration-200"
+            />
+          </div>
+
+          <div>
+            <label className="block text-xs font-bold text-neutral-600 uppercase tracking-wider mb-2">
+              カテゴリー <span className="text-red-500">*</span>
+            </label>
+            <div className="grid grid-cols-2 gap-2">
+              {(
+                [
+                  { id: 'stage', label: 'ステージ発表' },
+                  { id: 'exhibition', label: '展示企画' },
+                  { id: 'food_shop', label: 'PTA模擬店・バザー' },
+                  { id: 'event', label: '特別催し' },
+                ] as const
+              ).map((cat) => (
+                <button
+                  key={cat.id}
+                  type="button"
+                  onClick={() => setCategory(cat.id)}
+                  className={`py-3 px-4 rounded-xl text-xs font-semibold border transition-all duration-200 ${
+                    category === cat.id
+                      ? 'bg-indigo-600 border-indigo-600 text-white shadow-sm shadow-indigo-600/20'
+                      : 'bg-white border-neutral-200 text-neutral-600 hover:bg-neutral-50'
+                  }`}
+                >
+                  {cat.label}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          <div>
+            <label className="block text-xs font-bold text-neutral-600 uppercase tracking-wider mb-2">
+              スポットの紹介・解説
+            </label>
+            <textarea
+              value={description}
+              onChange={(e) => setDescription(e.target.value)}
+              rows={3}
+              placeholder="例: ここではどのような発表・企画が行われるか、またはイベントの詳細について分かりやすい解説文を記入してください。"
+              className="w-full px-4 py-3 rounded-xl border border-neutral-200 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 text-sm placeholder-neutral-400 transition-all duration-200 resize-none"
+            />
+          </div>
+
+          {/* Action buttons */}
+          <div className="flex justify-end gap-3 pt-4 border-t border-neutral-100">
+            <button
+              type="button"
+              onClick={onClose}
+              className="px-5 py-2.5 rounded-full text-xs font-bold text-neutral-500 hover:text-neutral-700 hover:bg-neutral-50 transition-colors duration-200"
+            >
+              キャンセル
+            </button>
+            <button
+              type="submit"
+              disabled={isSubmitting || !name.trim()}
+              className="flex items-center gap-2 px-6 py-2.5 rounded-full text-xs font-bold bg-indigo-600 hover:bg-indigo-700 text-white shadow-md shadow-indigo-600/10 transition-all duration-200 disabled:opacity-50"
+            >
+              <Save className="w-4 h-4" />
+              <span>スポットを配置する</span>
+            </button>
+          </div>
+        </form>
+
+      </div>
+    </div>
+  );
+}

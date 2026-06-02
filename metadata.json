@@ -1,0 +1,8 @@
+{
+  "name": "筑摩野改新党 口コミシステム",
+  "description": "筑摩野改新党が掲げる公約に紐づく、生徒が校内の要望・意見をピンポイントで投稿できるデジタルマップ口コミ・ハザードシステム（D1データベース・Pages連携済）",
+  "requestFramePermissions": [],
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}
