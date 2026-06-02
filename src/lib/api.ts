@@ -145,9 +145,6 @@ export const api = {
    * Fetch all spots
    */
   async getSpots(): Promise<Spot[]> {
-    if (isLocalDebug) {
-      return getLocalStorageSpots();
-    }
     try {
       const response = await fetch('/api/spots');
       if (!response.ok) throw new Error('Failed to fetch spots');
@@ -162,15 +159,6 @@ export const api = {
    * Save a new spot (admin)
    */
   async saveSpot(spot: Omit<Spot, 'id'>): Promise<Spot> {
-    if (isLocalDebug) {
-      const spots = getLocalStorageSpots();
-      const newSpot: Spot = {
-        ...spot,
-        id: spots.length > 0 ? Math.max(...spots.map(s => s.id)) + 1 : 1,
-      };
-      setLocalStorageSpots([...spots, newSpot]);
-      return newSpot;
-    }
     try {
       const response = await fetch('/api/spots', {
         method: 'POST',
@@ -195,18 +183,11 @@ export const api = {
    * Delete a spot (admin)
    */
   async deleteSpot(id: number): Promise<boolean> {
-    if (isLocalDebug) {
-      const spots = getLocalStorageSpots();
-      setLocalStorageSpots(spots.filter(s => s.id !== id));
-      // also filter reviews
-      const reviews = getLocalStorageReviews();
-      setLocalStorageReviews(reviews.filter(r => r.spotId !== id));
-      return true;
-    }
     try {
       const response = await fetch(`/api/spots?id=${id}`, {
         method: 'DELETE',
       });
+      if (!response.ok) throw new Error('Failed to delete spot');
       return response.ok;
     } catch (error) {
       console.warn('API error, falling back to local storage:', error);
@@ -222,10 +203,6 @@ export const api = {
    * Fetch all reviews or reviews for a specific spot
    */
   async getReviews(spotId?: number): Promise<Review[]> {
-    if (isLocalDebug) {
-      const reviews = getLocalStorageReviews();
-      return spotId ? reviews.filter(r => r.spotId === spotId) : reviews;
-    }
     try {
       const url = spotId ? `/api/reviews?spotId=${spotId}` : '/api/reviews';
       const response = await fetch(url);
@@ -242,16 +219,6 @@ export const api = {
    * Save a new review
    */
   async saveReview(review: Omit<Review, 'id'>): Promise<Review> {
-    if (isLocalDebug) {
-      const reviews = getLocalStorageReviews();
-      const newReview: Review = {
-        ...review,
-        id: reviews.length > 0 ? Math.max(...reviews.map(r => r.id)) + 1 : 1,
-        createdAt: new Date().toISOString(),
-      };
-      setLocalStorageReviews([...reviews, newReview]);
-      return newReview;
-    }
     try {
       const response = await fetch('/api/reviews', {
         method: 'POST',

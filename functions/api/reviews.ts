@@ -22,11 +22,11 @@ export const onRequestGet: PagesFunction<Env> = async (context) => {
     const url = new URL(context.request.url);
     const spotId = url.searchParams.get("spotId");
 
-    let query = "SELECT * FROM reviews ORDER BY id DESC";
+    let query = "SELECT * FROM rindou_kuchikomi_reviews ORDER BY id DESC";
     let stmt;
 
     if (spotId) {
-      query = "SELECT * FROM reviews WHERE spot_id = ? ORDER BY id DESC";
+      query = "SELECT * FROM rindou_kuchikomi_reviews WHERE spot_id = ? ORDER BY id DESC";
       stmt = DB.prepare(query).bind(spotId);
     } else {
       stmt = DB.prepare(query);
@@ -60,7 +60,7 @@ export const onRequestPost: PagesFunction<Env> = async (context) => {
 
     // Insert review and return the inserted row
     const info = await DB.prepare(
-      "INSERT INTO reviews (spot_id, rating, comment, author, role) VALUES (?, ?, ?, ?, ?) RETURNING *"
+      "INSERT INTO rindou_kuchikomi_reviews (spot_id, rating, comment, author, role) VALUES (?, ?, ?, ?, ?) RETURNING *"
     )
       .bind(spotId, rating, comment, author, role)
       .first();

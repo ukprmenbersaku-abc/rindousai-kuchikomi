@@ -19,7 +19,7 @@ interface Env {
 export const onRequestGet: PagesFunction<Env> = async (context) => {
   try {
     const { DB } = context.env;
-    const { results } = await DB.prepare("SELECT * FROM spots ORDER BY id DESC").all();
+    const { results } = await DB.prepare("SELECT * FROM rindou_kuchikomi_spots ORDER BY id DESC").all();
     return new Response(JSON.stringify(results), {
       headers: { "Content-Type": "application/json" },
     });
@@ -45,7 +45,7 @@ export const onRequestPost: PagesFunction<Env> = async (context) => {
     }
 
     const info = await DB.prepare(
-      "INSERT INTO spots (name, x, y, description, category) VALUES (?, ?, ?, ?, ?) RETURNING *"
+      "INSERT INTO rindou_kuchikomi_spots (name, x, y, description, category) VALUES (?, ?, ?, ?, ?) RETURNING *"
     )
       .bind(name, x, y, description || "", category)
       .first();
@@ -76,8 +76,8 @@ export const onRequestDelete: PagesFunction<Env> = async (context) => {
     }
 
     // Delete spot (cascades or handle reviews manually in database schema/queries)
-    await DB.prepare("DELETE FROM reviews WHERE spot_id = ?").bind(id).run();
-    await DB.prepare("DELETE FROM spots WHERE id = ?").bind(id).run();
+    await DB.prepare("DELETE FROM rindou_kuchikomi_reviews WHERE spot_id = ?").bind(id).run();
+    await DB.prepare("DELETE FROM rindou_kuchikomi_spots WHERE id = ?").bind(id).run();
 
     return new Response(JSON.stringify({ success: true }), {
       headers: { "Content-Type": "application/json" },
