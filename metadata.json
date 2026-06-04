@@ -1,6 +1,6 @@
 {
-  "name": "筑摩野改新党 口コミシステム",
-  "description": "筑摩野改新党が掲げる公約に紐づく、生徒が校内の要望・意見をピンポイントで投稿できるデジタルマップ口コミ・ハザードシステム（D1データベース・Pages連携済）",
+  "name": "筑摩野中 りんどう祭 マップ",
+  "description": "松本市立筑摩野中学校「りんどう祭」のステージ、展示企画、PTA模擬店やバザーの校内マップと詳細な口コミ・感想投稿ボードシステム。D1データベースとリアルタイムに連携しています。",
   "requestFramePermissions": [],
   "majorCapabilities": [
     "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"

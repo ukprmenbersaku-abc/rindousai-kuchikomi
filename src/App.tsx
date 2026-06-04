@@ -406,7 +406,63 @@ export default function App() {
                   {/* Sidebar Content Switch: Details View or Global Exploration List */}
                   {!selectedSpot ? (
                     <>
-                  {/* Search Bar matching Google Maps search utility */}
+                      {/* Admin Console Section (Collapsible & Premium) */}
+                      {isAdmin && (
+                        <div className="mx-4 mt-3 p-3.5 bg-amber-500/5 border border-amber-300/40 rounded-2xl text-left">
+                          <div className="flex items-center justify-between mb-2">
+                            <div className="flex items-center gap-1.5">
+                              <span className="w-2 h-2 rounded-full bg-amber-500 animate-pulse" />
+                              <span className="text-xs font-black text-neutral-800 tracking-tight">
+                                🛠️ 管理者コンソール
+                              </span>
+                            </div>
+                            <span className="text-[9px] font-bold text-amber-700 bg-amber-100/60 px-1.5 py-0.5 rounded">
+                              D1データベース
+                            </span>
+                          </div>
+                          <p className="text-[10px] text-neutral-500 leading-relaxed mb-3">
+                            校内マップ上の企画イベントを管理します。「初期設定にリセット」で主要4スポット（ステージ、ステンドグラス、おやき模擬店、美術書道展）と初期口コミに戻せます。
+                          </p>
+                          <div className="grid grid-cols-2 gap-2">
+                            {/* Reset Defaults button */}
+                            <button
+                              onClick={async () => {
+                                if (window.confirm('データベースを初期状態（4つの主要な企画スポットと初期口コミ）にリセットして再構築しますか？この操作により、他に追加したスポットや新しい口コミは消去されます。')) {
+                                  try {
+                                    triggerNotification('🔄 データベースを初期化中...');
+                                    const success = await api.resetDatabase();
+                                    if (success) {
+                                      await loadSpots();
+                                      setSelectedSpot(null);
+                                      triggerNotification('✨ りんどう祭の初期設定にリセットが完了しました！');
+                                    } else {
+                                      triggerNotification('❌ リセット中にエラーが発生しました');
+                                    }
+                                  } catch (err) {
+                                    console.error(err);
+                                    triggerNotification('❌ 接続エラーが発生しました');
+                                  }
+                                }
+                              }}
+                              className="flex items-center justify-center gap-1 py-1.5 px-2 rounded-xl text-[10px] font-bold bg-amber-600 hover:bg-amber-700 text-white transition-all shadow-sm shrink-0 whitespace-nowrap select-none"
+                            >
+                              <span>⚙️ 初期設定にリセット</span>
+                            </button>
+
+                            {/* Add Spot button */}
+                            <button
+                              onClick={() => {
+                                setAddingCoord({ x: 50.0, y: 50.0 });
+                              }}
+                              className="flex items-center justify-center gap-1 py-1.5 px-2 rounded-xl text-[10px] font-bold bg-indigo-600 hover:bg-indigo-700 text-white transition-all shadow-sm shrink-0 whitespace-nowrap select-none"
+                            >
+                              <span>➕ 新規イベント追加</span>
+                            </button>
+                          </div>
+                        </div>
+                      )}
+
+                      {/* Search Bar matching Google Maps search utility */}
                   <div className="relative px-4 py-2 border-b border-neutral-100 bg-white">
                     <div className="relative">
                       <input

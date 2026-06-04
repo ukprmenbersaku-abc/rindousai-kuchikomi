@@ -18,6 +18,8 @@ export default function SpotFormModal({ x, y, onClose, onSave }: SpotFormModalPr
   const [name, setName] = useState('');
   const [description, setDescription] = useState('');
   const [category, setCategory] = useState<'stage' | 'exhibition' | 'food_shop' | 'event'>('stage');
+  const [coordX, setCoordX] = useState<number>(x);
+  const [coordY, setCoordY] = useState<number>(y);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -27,8 +29,8 @@ export default function SpotFormModal({ x, y, onClose, onSave }: SpotFormModalPr
     setIsSubmitting(true);
     onSave({
       name: name.trim(),
-      x,
-      y,
+      x: Number(coordX),
+      y: Number(coordY),
       description: description.trim(),
       category,
     });
@@ -62,13 +64,43 @@ export default function SpotFormModal({ x, y, onClose, onSave }: SpotFormModalPr
           </div>
         </div>
 
-        {/* Selected Coordinates Status Badge */}
-        <div className="mb-6 flex items-center gap-2 bg-neutral-50 border border-neutral-200/40 px-3.5 py-2 rounded-xl text-neutral-600 font-mono text-xs">
-          <Crosshair className="w-3.5 h-3.5 text-neutral-400 animate-pulse" />
-          <span>配置座標 (比率%): </span>
-          <span className="font-bold text-indigo-600">X: {x}%</span>
-          <span className="text-neutral-300">|</span>
-          <span className="font-bold text-indigo-600">Y: {y}%</span>
+        {/* Selected Coordinates Status Badge (Now fully editable for perfect layout alignment) */}
+        <div className="mb-6 p-4 bg-neutral-50 border border-neutral-200/50 rounded-2xl">
+          <div className="flex items-center gap-1.5 mb-2.5 text-neutral-700 font-bold text-xs select-none">
+            <Crosshair className="w-4 h-4 text-indigo-500 animate-pulse shrink-0" />
+            <span>配置座標の微調整 (比率%)</span>
+          </div>
+          <div className="grid grid-cols-2 gap-3">
+            <div>
+              <label className="block text-[10px] font-bold text-neutral-400 mb-1">X 座標 (0〜100%)</label>
+              <input
+                type="number"
+                step="0.1"
+                min="0"
+                max="100"
+                required
+                value={coordX}
+                onChange={(e) => setCoordX(parseFloat(e.target.value) || 0)}
+                className="w-full px-3 py-1.5 rounded-lg border border-neutral-200 text-xs font-mono font-bold bg-white text-neutral-800 focus:outline-none focus:ring-1 focus:ring-indigo-500"
+              />
+            </div>
+            <div>
+              <label className="block text-[10px] font-bold text-neutral-400 mb-1">Y 座標 (0〜100%)</label>
+              <input
+                type="number"
+                step="0.1"
+                min="0"
+                max="100"
+                required
+                value={coordY}
+                onChange={(e) => setCoordY(parseFloat(e.target.value) || 0)}
+                className="w-full px-3 py-1.5 rounded-lg border border-neutral-200 text-xs font-mono font-bold bg-white text-neutral-800 focus:outline-none focus:ring-1 focus:ring-indigo-500"
+              />
+            </div>
+          </div>
+          <p className="text-[9px] text-neutral-400 mt-2 leading-tight">
+            ※数値を直接入力して配置位置をコントロールできます。ステージ発表は「42.5, 35」、展示企画は「22, 55.5」や「81.3, 28.5」、模擬店は「62.5, 72」が基準点となります。
+          </p>
         </div>
 
         {/* Input Form */}

@@ -238,5 +238,23 @@ export const api = {
       setLocalStorageReviews([...reviews, newReview]);
       return newReview;
     }
+  },
+
+  /**
+   * Reset database to the initial 4 default spots and starter reviews
+   */
+  async resetDatabase(): Promise<boolean> {
+    try {
+      const response = await fetch('/api/reset', {
+        method: 'POST',
+      });
+      if (!response.ok) throw new Error('Failed to reset database');
+      return response.ok;
+    } catch (error) {
+      console.warn('API error, falling back to local storage reset:', error);
+      localStorage.setItem(STORAGE_KEYS.SPOTS, JSON.stringify(MOCK_SPOTS));
+      localStorage.setItem(STORAGE_KEYS.REVIEWS, JSON.stringify(MOCK_REVIEWS));
+      return true;
+    }
   }
 };
