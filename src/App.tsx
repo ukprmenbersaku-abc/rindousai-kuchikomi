@@ -421,22 +421,22 @@ export default function App() {
                             </span>
                           </div>
                           <p className="text-[10px] text-neutral-500 leading-relaxed mb-3">
-                            校内マップ上の企画イベントを管理します。「初期設定にリセット」で主要4スポット（ステージ、ステンドグラス、おやき模擬店、美術書道展）と初期口コミに戻せます。
+                            校内マップ上の企画イベントを管理します。「データをすべて消去」をクリックすると、すべての登録スポットと口コミを空（まっさらな状態）に初期化します。
                           </p>
                           <div className="grid grid-cols-2 gap-2">
                             {/* Reset Defaults button */}
                             <button
                               onClick={async () => {
-                                if (window.confirm('データベースを初期状態（4つの主要な企画スポットと初期口コミ）にリセットして再構築しますか？この操作により、他に追加したスポットや新しい口コミは消去されます。')) {
+                                if (window.confirm('データベース内のすべてのスポットと口コミを消去して、完全にまっさらな状態に初期化します。よろしいですか？')) {
                                   try {
-                                    triggerNotification('🔄 データベースを初期化中...');
+                                    triggerNotification('🔄 データベースを完全初期化中...');
                                     const success = await api.resetDatabase();
                                     if (success) {
                                       await loadSpots();
                                       setSelectedSpot(null);
-                                      triggerNotification('✨ りんどう祭の初期設定にリセットが完了しました！');
+                                      triggerNotification('✨ すべてのデータを消去し、まっさらな状態に初期化しました！');
                                     } else {
-                                      triggerNotification('❌ リセット中にエラーが発生しました');
+                                      triggerNotification('❌ 初期化中にエラーが発生しました');
                                     }
                                   } catch (err) {
                                     console.error(err);
@@ -446,7 +446,7 @@ export default function App() {
                               }}
                               className="flex items-center justify-center gap-1 py-1.5 px-2 rounded-xl text-[10px] font-bold bg-amber-600 hover:bg-amber-700 text-white transition-all shadow-sm shrink-0 whitespace-nowrap select-none"
                             >
-                              <span>⚙️ 初期設定にリセット</span>
+                              <span>🗑️ データをすべて消去</span>
                             </button>
 
                             {/* Add Spot button */}
