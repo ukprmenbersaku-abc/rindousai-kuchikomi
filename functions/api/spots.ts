@@ -75,6 +75,15 @@ export const onRequestDelete: PagesFunction<Env> = async (context) => {
       });
     }
 
+    // Protect initial 4 essential spots from being manually deleted
+    const numericId = parseInt(id, 10);
+    if (numericId >= 1 && numericId <= 4) {
+      return new Response(JSON.stringify({ error: "基本の4スポット（メインステージ、ステンドグラス、模擬店、美術書道展）は保護されているため削除できません。" }), {
+        status: 403,
+        headers: { "Content-Type": "application/json" },
+      });
+    }
+
     // Delete spot (cascades or handle reviews manually in database schema/queries)
     await DB.prepare("DELETE FROM rindou_kuchikomi_reviews WHERE spot_id = ?").bind(id).run();
     await DB.prepare("DELETE FROM rindou_kuchikomi_spots WHERE id = ?").bind(id).run();

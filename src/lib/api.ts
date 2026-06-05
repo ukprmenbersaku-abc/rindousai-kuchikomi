@@ -140,7 +140,16 @@ function setLocalStorageReviews(reviews: Review[]) {
 }
 
 // API Service exports
+let hasFallbackTriggered = false;
+
 export const api = {
+  /**
+   * Check if current operation failed and fell back to local storage
+   */
+  isUsingFallback(): boolean {
+    return hasFallbackTriggered;
+  },
+
   /**
    * Fetch all spots
    */
@@ -148,9 +157,11 @@ export const api = {
     try {
       const response = await fetch('/api/spots');
       if (!response.ok) throw new Error('Failed to fetch spots');
+      hasFallbackTriggered = false;
       return await response.json();
     } catch (error) {
       console.warn('API error, falling back to local storage:', error);
+      hasFallbackTriggered = true;
       return getLocalStorageSpots();
     }
   },
@@ -166,9 +177,11 @@ export const api = {
         body: JSON.stringify(spot),
       });
       if (!response.ok) throw new Error('Failed to save spot');
+      hasFallbackTriggered = false;
       return await response.json();
     } catch (error) {
       console.warn('API error, falling back to local storage:', error);
+      hasFallbackTriggered = true;
       const spots = getLocalStorageSpots();
       const newSpot: Spot = {
         ...spot,
@@ -188,9 +201,11 @@ export const api = {
         method: 'DELETE',
       });
       if (!response.ok) throw new Error('Failed to delete spot');
+      hasFallbackTriggered = false;
       return response.ok;
     } catch (error) {
       console.warn('API error, falling back to local storage:', error);
+      hasFallbackTriggered = true;
       const spots = getLocalStorageSpots();
       setLocalStorageSpots(spots.filter(s => s.id !== id));
       const reviews = getLocalStorageReviews();
@@ -207,9 +222,11 @@ export const api = {
       const url = spotId ? `/api/reviews?spotId=${spotId}` : '/api/reviews';
       const response = await fetch(url);
       if (!response.ok) throw new Error('Failed to fetch reviews');
+      hasFallbackTriggered = false;
       return await response.json();
     } catch (error) {
       console.warn('API error, falling back to local storage:', error);
+      hasFallbackTriggered = true;
       const reviews = getLocalStorageReviews();
       return spotId ? reviews.filter(r => r.spotId === spotId) : reviews;
     }
@@ -226,9 +243,11 @@ export const api = {
         body: JSON.stringify(review),
       });
       if (!response.ok) throw new Error('Failed to save review');
+      hasFallbackTriggered = false;
       return await response.json();
     } catch (error) {
       console.warn('API error, falling back to local storage:', error);
+      hasFallbackTriggered = true;
       const reviews = getLocalStorageReviews();
       const newReview: Review = {
         ...review,
@@ -249,9 +268,11 @@ export const api = {
         method: 'POST',
       });
       if (!response.ok) throw new Error('Failed to reset database');
+      hasFallbackTriggered = false;
       return response.ok;
     } catch (error) {
       console.warn('API error, falling back to local storage reset:', error);
+      hasFallbackTriggered = true;
       localStorage.setItem(STORAGE_KEYS.SPOTS, JSON.stringify(MOCK_SPOTS));
       localStorage.setItem(STORAGE_KEYS.REVIEWS, JSON.stringify(MOCK_REVIEWS));
       return true;

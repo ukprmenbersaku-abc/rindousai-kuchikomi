@@ -33,6 +33,7 @@ export default function App() {
   const [isMobile, setIsMobile] = useState(false);
   const [isMobileDrawerExpanded, setIsMobileDrawerExpanded] = useState(false);
   const [expandedProgram, setExpandedProgram] = useState<number | null>(0); // 1st program open by default on mobile
+  const [showD1Help, setShowD1Help] = useState(false);
 
   // Reviews and Search/Filtering for Google Maps style left detailed sidebar
   const [spotReviews, setSpotReviews] = useState<any[]>([]);
@@ -408,33 +409,61 @@ export default function App() {
                     <>
                       {/* Admin Console Section (Collapsible & Premium) */}
                       {isAdmin && (
-                        <div className="mx-4 mt-3 p-3.5 bg-amber-500/5 border border-amber-300/40 rounded-2xl text-left">
-                          <div className="flex items-center justify-between mb-2">
+                        <div className="mx-4 mt-3 p-4 bg-slate-900 text-white rounded-2xl text-left shadow-lg border border-slate-800">
+                          <div className="flex items-center justify-between mb-2 pb-2 border-b border-slate-800">
                             <div className="flex items-center gap-1.5">
-                              <span className="w-2 h-2 rounded-full bg-amber-500 animate-pulse" />
-                              <span className="text-xs font-black text-neutral-800 tracking-tight">
+                              <span className="w-2.5 h-2.5 rounded-full bg-amber-500 animate-pulse" />
+                              <span className="text-xs font-black tracking-tight">
                                 🛠️ 管理者コンソール
                               </span>
                             </div>
-                            <span className="text-[9px] font-bold text-amber-700 bg-amber-100/60 px-1.5 py-0.5 rounded">
-                              D1データベース
+                            <span className="text-[10px] font-bold text-amber-400 bg-amber-400/10 px-2 py-0.5 rounded-full border border-amber-400/30">
+                              Pages D1
                             </span>
                           </div>
-                          <p className="text-[10px] text-neutral-500 leading-relaxed mb-3">
-                            校内マップ上の企画イベントを管理します。「データをすべて消去」をクリックすると、すべての登録スポットと口コミを空（まっさらな状態）に初期化します。
+
+                          {/* D1 Connection Status Badge */}
+                          <div className="mb-3 p-2.5 rounded-xl bg-slate-950 border border-slate-800/80">
+                            <div className="flex items-center gap-2 mb-1">
+                              {api.isUsingFallback() ? (
+                                <>
+                                  <span className="w-2 h-2 rounded-full bg-cyan-400 animate-ping" />
+                                  <span className="text-[10px] font-bold text-cyan-400">
+                                    💡 ローカル(LocalStorage)で動作中
+                                  </span>
+                                </>
+                              ) : (
+                                <>
+                                  <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
+                                  <span className="text-[10px] font-bold text-emerald-400">
+                                    🟢 Realtime D1 データベース接続中
+                                  </span>
+                                </>
+                              )}
+                            </div>
+                            <p className="text-[9px] text-slate-400 leading-normal">
+                              {api.isUsingFallback() 
+                                ? "現在の環境では Cloudflare D1 データベースへのバインディングが無効、または未作成のため、ローカルキャッシュ(安全な模擬DB)で自動フォールバック運転しています。D1設定完了後に自動でリアルタイム同期に切り替わります。"
+                                : "Cloudflare D1 リアルタイムデータベースとの完全同期に成功しています！追加したスポットや書き込まれた口コミは本番DBに直接保存されます。"}
+                            </p>
+                          </div>
+
+                          <p className="text-[10px] text-slate-300 leading-relaxed mb-3">
+                            マップ上の企画イベントを管理します。「データをすべて消去」を選択しても、<strong>最初から入っている基本の4スポット（メインステージ、ステンドグラス、おやき模擬店、美術書道展）は保護されて消去されません</strong>（一般の口コミや自分で後から追加したスポットのみを綺麗にリセットします）。
                           </p>
-                          <div className="grid grid-cols-2 gap-2">
-                            {/* Reset Defaults button */}
+
+                          <div className="grid grid-cols-2 gap-2 mb-3">
+                            {/* Reset/Clear button */}
                             <button
                               onClick={async () => {
-                                if (window.confirm('データベース内のすべてのスポットと口コミを消去して、完全にまっさらな状態に初期化します。よろしいですか？')) {
+                                if (window.confirm('追加したカスタムスポットとすべての口コミを消去して初期化します。（※最初からある第1体育館などの主要4スポットと位置情報は消去されずにきちんと維持されます！）よろしいですか？')) {
                                   try {
-                                    triggerNotification('🔄 データベースを完全初期化中...');
+                                    triggerNotification('🔄 データベース初期化中...');
                                     const success = await api.resetDatabase();
                                     if (success) {
                                       await loadSpots();
                                       setSelectedSpot(null);
-                                      triggerNotification('✨ すべてのデータを消去し、まっさらな状態に初期化しました！');
+                                      triggerNotification('✨ すべての一般口コミを消去し、標準の4スポットにリセットしました！');
                                     } else {
                                       triggerNotification('❌ 初期化中にエラーが発生しました');
                                     }
@@ -444,7 +473,7 @@ export default function App() {
                                   }
                                 }
                               }}
-                              className="flex items-center justify-center gap-1 py-1.5 px-2 rounded-xl text-[10px] font-bold bg-amber-600 hover:bg-amber-700 text-white transition-all shadow-sm shrink-0 whitespace-nowrap select-none"
+                              className="flex items-center justify-center gap-1.5 py-2 px-2.5 rounded-xl text-[10px] font-black bg-rose-600 hover:bg-rose-700 text-white transition-all shadow-sm shrink-0 whitespace-nowrap select-none border border-rose-500/30"
                             >
                               <span>🗑️ データをすべて消去</span>
                             </button>
@@ -454,10 +483,53 @@ export default function App() {
                               onClick={() => {
                                 setAddingCoord({ x: 50.0, y: 50.0 });
                               }}
-                              className="flex items-center justify-center gap-1 py-1.5 px-2 rounded-xl text-[10px] font-bold bg-indigo-600 hover:bg-indigo-700 text-white transition-all shadow-sm shrink-0 whitespace-nowrap select-none"
+                              className="flex items-center justify-center gap-1.5 py-2 px-2.5 rounded-xl text-[10px] font-black bg-indigo-600 hover:bg-indigo-700 text-white transition-all shadow-sm shrink-0 whitespace-nowrap select-none border border-indigo-500/30"
                             >
                               <span>➕ 新規イベント追加</span>
                             </button>
+                          </div>
+
+                          {/* Quick D1 setup dropdown help */}
+                          <div className="border-t border-slate-800/80 pt-2.5">
+                            <button
+                              onClick={() => setShowD1Help(!showD1Help)}
+                              className="w-full flex items-center justify-between text-[10px] font-extrabold text-slate-300 hover:text-white transition-colors"
+                            >
+                              <span className="flex items-center gap-1">
+                                <HelpCircle className="w-3.5 h-3.5 text-indigo-400" />
+                                ❓ D1データベース連携に必要な設定は？
+                              </span>
+                              <span className="text-[8px] font-mono font-bold bg-slate-800 text-slate-400 px-1.5 py-0.5 rounded">
+                                {showD1Help ? '閉じる ⬆️' : '展開する ⬇️'}
+                              </span>
+                            </button>
+
+                            {showD1Help && (
+                              <div className="mt-2 p-2.5 bg-slate-950 rounded-xl text-[9px] text-slate-300 space-y-2 border border-slate-800/60 leading-normal animate-slide-up">
+                                <p className="font-bold text-indigo-400">Cloudflare Pages と D1 連携設定シート</p>
+                                <ol className="list-decimal pl-3 space-y-1.5 text-slate-400">
+                                  <li>
+                                    <strong className="text-slate-200">D1データベースの作成:</strong><br />
+                                    Cloudflareダッシュボードの 「D1/SQL」 からデータベースを新規作成します。
+                                  </li>
+                                  <li>
+                                    <strong className="text-slate-200">テーブルの初期設定 (スキーマ適用):</strong><br />
+                                    D1コンソール上に、本プロジェクトのルートにある <code className="text-indigo-300">/functions/schema.sql</code> の内容を実行して、テーブルを作成します。
+                                  </li>
+                                  <li>
+                                    <strong className="text-slate-200">Pagesプロジェクトにバインド:</strong><br />
+                                    Pagesの設定画面「Settings」 &gt; 「Functions」 &gt; 「D1 database bindings」にて、<code className="text-slate-200 bg-slate-800 px-1 py-0.5 rounded">DB</code> というバインディング名 (Variable name) で上記1で作成したD1を選択して保存します。
+                                  </li>
+                                  <li>
+                                    <strong className="text-slate-200">再デプロイ:</strong><br />
+                                    バインド後に再デプロイすると、自動的にフォールバックから本物のリアルタイムD1通信に切り替わります！
+                                  </li>
+                                </ol>
+                                <p className="text-[8px] text-amber-400 bg-amber-500/5 p-1.5 rounded border border-amber-500/20">
+                                  ※ 独自ドメイン <code className="font-semibold text-white">rindousai-kuchi.pages.dev</code> にてD1バインドを行えば、複数スマホやブラウザ間で投稿された内容が即時にリアルタイム共有されます。
+                                </p>
+                              </div>
+                            )}
                           </div>
                         </div>
                       )}
