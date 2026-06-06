@@ -14,7 +14,7 @@ import ReviewModal from './components/ReviewModal';
 import { 
   Users, Calendar, CheckSquare, Sparkles, MessageSquareHeart, 
   MapPin, AlertCircle, HelpCircle, Flame, ExternalLink, ChevronRight, CheckCircle2,
-  Search, Star, Send, Trash2, Heart, MessageSquare, ChevronLeft, Compass
+  Search, Star, Send, Trash2, Heart, MessageSquare, ChevronLeft, Compass, Plus
 } from 'lucide-react';
 
 const DEFAULT_CATEGORIES: Category[] = [
@@ -35,6 +35,13 @@ export default function App() {
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
   const [addingCoord, setAddingCoord] = useState<{ x: number; y: number } | null>(null);
   const [showNotification, setShowNotification] = useState<string | null>(null);
+
+  // Table Spot Add form states
+  const [tableSpotName, setTableSpotName] = useState('');
+  const [tableSpotDesc, setTableSpotDesc] = useState('');
+  const [tableSpotCat, setTableSpotCat] = useState('stage');
+  const [tableSpotX, setTableSpotX] = useState<number>(50);
+  const [tableSpotY, setTableSpotY] = useState<number>(50);
 
   // Secret Admin & Mobile responsive optimization states
   const [showLoginModal, setShowLoginModal] = useState(false);
@@ -501,7 +508,7 @@ export default function App() {
                             マップ上のすべての企画イベントや口コミ投稿データを一括管理します。「データをすべて消去」を選択すると、登録されたすべてのスポット情報（座標位置も含む）と一般の書き込み口コミを含む、すべてのデータがデータベースから完全に消去され、まっさらな状態から新規設定できます。
                           </p>
 
-                          <div className="grid grid-cols-2 gap-2 mb-3">
+                          <div className="grid grid-cols-2 gap-2 mb-2">
                             {/* Reset/Clear button */}
                             <button
                               onClick={async () => {
@@ -537,6 +544,17 @@ export default function App() {
                               <span>➕ 新規イベント追加</span>
                             </button>
                           </div>
+
+                          {/* Link to table management view */}
+                          <button
+                            type="button"
+                            onClick={() => {
+                              setActiveTab('admin_table');
+                            }}
+                            className="w-full flex items-center justify-center gap-1.5 py-2.5 px-3 rounded-xl text-[10px] font-extrabold bg-slate-800 hover:bg-slate-700 text-amber-400 border border-slate-700 transition-all shadow-md mb-3"
+                          >
+                            <span>📋 表（リスト）形式の一括管理画面を開く</span>
+                          </button>
 
                           {/* Dynamic Category Management Section */}
                           <div className="border-t border-slate-805/80 pt-3 mt-3 mb-2 pb-3">
@@ -1220,6 +1238,401 @@ export default function App() {
                 <p className="text-xs text-neutral-400 mt-1 leading-relaxed">合唱コンクールの金賞発表、スライドショー上映など、感動で幕を閉じる閉祭式です。</p>
               </div>
 
+            </div>
+          </div>
+        )}
+
+        {activeTab === 'admin_table' && isAdmin && (
+          <div className="max-w-7xl mx-auto px-4 py-8 sm:py-16 animate-fade-in text-left">
+            <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
+              <div>
+                <span className="text-xs font-black text-indigo-600 bg-indigo-50 border border-indigo-100 px-3 py-1 rounded-full uppercase tracking-wider">
+                  データベース管理 (表形式)
+                </span>
+                <h2 className="text-2xl sm:text-3xl font-black text-neutral-900 mt-3 tracking-tight">
+                  📋 会場スポット＆カテゴリー一括管理
+                </h2>
+                <p className="text-xs text-neutral-500 mt-1">
+                  地図上を直接クリックする以外に、こちらの表（リスト）形式でもイベント・展示企画やカテゴリーを完全に追加・削除、一括監視できます。
+                </p>
+              </div>
+              <div className="flex items-center gap-2 bg-slate-950 text-white rounded-2xl p-3 border border-slate-800">
+                <div className="text-xs">
+                  <span className="font-bold text-slate-400 block text-[9px] uppercase">Connection Status</span>
+                  <span className="font-bold text-emerald-400">🟢 Cloudflare D1 / Local Synced</span>
+                </div>
+              </div>
+            </div>
+
+            {/* Grid for forms and summaries */}
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
+              {/* Form 1: Add new Spot directly via Table */}
+              <div className="bg-white p-6 rounded-3xl border border-neutral-200/60 shadow-sm col-span-1 lg:col-span-2">
+                <div className="flex items-center gap-2 mb-4 pb-2 border-b border-neutral-100">
+                  <MapPin className="w-5 h-5 text-indigo-500" />
+                  <h3 className="text-sm font-black text-neutral-800">📌 表（テーブル）形式から新規スポットを直接登録</h3>
+                </div>
+                <div className="space-y-4">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div>
+                      <label className="block text-[10px] font-black text-neutral-500 uppercase tracking-wider mb-1">
+                        企画・スポット名 <span className="text-rose-500">*</span>
+                      </label>
+                      <input
+                        type="text"
+                        placeholder="例: 第1体育館 (メインステージ)"
+                        value={tableSpotName}
+                        onChange={(e) => setTableSpotName(e.target.value)}
+                        className="w-full bg-neutral-50 hover:bg-neutral-100/50 focus:bg-white border border-neutral-200 focus:border-indigo-500 text-xs rounded-xl px-3.5 py-2.5 transition-all outline-none"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-[10px] font-black text-neutral-500 uppercase tracking-wider mb-1">
+                        カテゴリー <span className="text-rose-500">*</span>
+                      </label>
+                      <select
+                        value={tableSpotCat}
+                        onChange={(e) => setTableSpotCat(e.target.value)}
+                        className="w-full bg-neutral-50 hover:bg-neutral-100/50 focus:bg-white border border-neutral-200 focus:border-indigo-500 text-xs rounded-xl px-3.5 py-2.5 transition-all outline-none"
+                      >
+                        {categories.map((cat) => (
+                          <option key={cat.id} value={cat.id}>
+                            {cat.label}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div>
+                      <label className="block text-[10px] font-black text-neutral-500 uppercase tracking-wider mb-1">
+                        地図上の X 座標 (%) <span className="text-xs text-neutral-400">(0～100)</span>
+                      </label>
+                      <input
+                        type="number"
+                        min="0"
+                        max="100"
+                        step="0.1"
+                        value={tableSpotX}
+                        onChange={(e) => setTableSpotX(parseFloat(e.target.value) || 0)}
+                        className="w-full bg-neutral-50 hover:bg-neutral-100/50 focus:bg-white border border-neutral-200 focus:border-indigo-500 text-xs rounded-xl px-3.5 py-2.5 transition-all outline-none font-mono"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-[10px] font-black text-neutral-500 uppercase tracking-wider mb-1">
+                        地図上の Y 座標 (%) <span className="text-xs text-neutral-400">(0～100)</span>
+                      </label>
+                      <input
+                        type="number"
+                        min="0"
+                        max="100"
+                        step="0.1"
+                        value={tableSpotY}
+                        onChange={(e) => setTableSpotY(parseFloat(e.target.value) || 0)}
+                        className="w-full bg-neutral-50 hover:bg-neutral-100/50 focus:bg-white border border-neutral-200 focus:border-indigo-500 text-xs rounded-xl px-3.5 py-2.5 transition-all outline-none font-mono"
+                      />
+                    </div>
+                  </div>
+
+                  <div>
+                    <label className="block text-[10px] font-black text-neutral-500 uppercase tracking-wider mb-1">
+                      企画の紹介・説明文
+                    </label>
+                    <textarea
+                      placeholder="企画の内容やスケジュール、PR文を入力..."
+                      value={tableSpotDesc}
+                      onChange={(e) => setTableSpotDesc(e.target.value)}
+                      rows={2}
+                      className="w-full bg-neutral-50 hover:bg-neutral-100/50 focus:bg-white border border-neutral-200 focus:border-indigo-500 text-xs rounded-xl px-3.5 py-2.5 transition-all outline-none resize-none"
+                    />
+                  </div>
+
+                  <div className="flex justify-end pt-2">
+                    <button
+                      type="button"
+                      onClick={async () => {
+                        if (!tableSpotName.trim()) {
+                          triggerNotification('⚠️ スポット名を入力してください！');
+                          return;
+                        }
+                        try {
+                          triggerNotification('💾 新しいスポットを登録中...');
+                          const spotData = {
+                            name: tableSpotName.trim(),
+                            x: Math.max(0, Math.min(100, tableSpotX)),
+                            y: Math.max(0, Math.min(100, tableSpotY)),
+                            description: tableSpotDesc.trim(),
+                            category: tableSpotCat,
+                          };
+
+                          const saved = await api.saveSpot(spotData);
+                          if (saved) {
+                            setSpots((prev) => [...prev, saved]);
+                            setTableSpotName('');
+                            setTableSpotDesc('');
+                            triggerNotification(`✨ スポット「${saved.name}」を表形式から正常に追加しました！`);
+                          }
+                        } catch (err) {
+                          console.error(err);
+                          triggerNotification('❌ スポットの追加に失敗しました。');
+                        }
+                      }}
+                      className="bg-indigo-600 hover:bg-indigo-700 text-white font-extrabold text-[11px] px-6 py-2.5 rounded-xl transition-all shadow-md shadow-indigo-600/10 flex items-center gap-1.5"
+                    >
+                      <Plus className="w-3.5 h-3.5" />
+                      <span>新規スポットを表に追加</span>
+                    </button>
+                  </div>
+                </div>
+              </div>
+
+              {/* Form 2: Quick add category right here in Table Admin too */}
+              <div className="bg-slate-900 border border-slate-800 text-white p-6 rounded-3xl col-span-1 shadow-lg">
+                <div className="flex items-center gap-2 mb-4 pb-2 border-b border-slate-800">
+                  <span className="w-2.5 h-2.5 rounded-full bg-indigo-500 animate-pulse" />
+                  <h3 className="text-sm font-black tracking-tight">🏷️ 新たなカテゴリー登録</h3>
+                </div>
+                <p className="text-[10px] text-slate-300 leading-normal mb-4">
+                  教室企画や部活展、生徒向けオリジナル企画など、テーマ色の異なるカテゴリーを追加できます。
+                </p>
+
+                <div className="space-y-4">
+                  <div>
+                    <label className="block text-[10px] font-black text-slate-400 uppercase tracking-wider mb-1">
+                      カテゴリーの表示名
+                    </label>
+                    <input
+                      type="text"
+                      placeholder="例: イラスト研究会"
+                      value={newCategoryLabel}
+                      onChange={(e) => setNewCategoryLabel(e.target.value)}
+                      className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2.5 text-xs text-white placeholder-slate-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-[10px] font-black text-slate-400 uppercase tracking-wider mb-1">
+                      テーマ色 (ピン・バッジの色)
+                    </label>
+                    <select
+                      value={newCategoryColor}
+                      onChange={(e) => setNewCategoryColor(e.target.value)}
+                      className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2.5 text-xs text-slate-300 focus:outline-none"
+                    >
+                      <option value="indigo">藍色 (Indigo)</option>
+                      <option value="emerald">緑色 (Emerald)</option>
+                      <option value="amber">琥珀色 (Amber)</option>
+                      <option value="rose">薔薇色 (Rose)</option>
+                      <option value="violet">紫色 (Violet)</option>
+                      <option value="teal">鴨羽色 (Teal)</option>
+                      <option value="orange">橙色 (Orange)</option>
+                      <option value="fuchsia">紅紫色 (Fuchsia)</option>
+                    </select>
+                  </div>
+
+                  <button
+                    type="button"
+                    onClick={async () => {
+                      if (!newCategoryLabel.trim()) return;
+                      const cleanId = 'cat_' + Math.random().toString(36).substr(2, 9);
+                      const newCat: Category = {
+                        id: cleanId,
+                        label: newCategoryLabel.trim(),
+                        color: newCategoryColor,
+                      };
+                      try {
+                        triggerNotification('🏷️ カテゴリーを登録中...');
+                        const saved = await api.saveCategory(newCat);
+                        setCustomCategories(prev => [...prev, saved]);
+                        setNewCategoryLabel('');
+                        triggerNotification(`✅ カテゴリー「${saved.label}」を作成しました！`);
+                      } catch (err) {
+                        console.error(err);
+                        triggerNotification('❌ カテゴリー作成に失敗しました');
+                      }
+                    }}
+                    className="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-extrabold text-[11px] transition-colors rounded-xl py-2.5 px-3.5 shadow-md shadow-indigo-600/10"
+                  >
+                    新規カテゴリーを作成
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            {/* TAB CONTAINER: SPOTS & CATEGORIES LIST TABLES */}
+            <div className="space-y-8">
+              {/* Spots List Table UI block */}
+              <div className="bg-white rounded-3xl border border-neutral-200/60 overflow-hidden shadow-sm">
+                <div className="p-5 border-b border-neutral-100 flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-neutral-50/40">
+                  <div>
+                    <h3 className="text-sm font-black text-neutral-800 flex items-center gap-1.5">
+                      <span>📌 登録済みスポット一覧テーブル ({spots.length}つ)</span>
+                    </h3>
+                    <p className="text-[10px] text-neutral-400">
+                      現在登録されているすべての企画詳細です。ここから一発削除でき、リアルタイムに反映されます。
+                    </p>
+                  </div>
+                </div>
+
+                <div className="overflow-x-auto">
+                  {spots.length === 0 ? (
+                    <div className="p-8 text-center text-xs text-neutral-400">
+                      登録されているイベントスポットがすべて消去されたか、まだ登録されていません。上のフォームから最初のスポットを追加しましょう！
+                    </div>
+                  ) : (
+                    <table className="w-full text-left border-collapse">
+                      <thead>
+                        <tr className="bg-neutral-50 border-b border-neutral-200/60 text-[10px] font-black text-neutral-500 uppercase tracking-wider font-sans">
+                          <th className="py-3 px-4 w-12 text-center">ID</th>
+                          <th className="py-3 px-4">プレビュー</th>
+                          <th className="py-3 px-4">スポット名</th>
+                          <th className="py-3 px-4">カテゴリー</th>
+                          <th className="py-3 px-4 w-28 font-mono">座標 (X, Y) (%)</th>
+                          <th className="py-3 px-4 text-neutral-500">企画の紹介文</th>
+                          <th className="py-3 px-4 w-20 text-center">操作</th>
+                        </tr>
+                      </thead>
+                      <tbody className="divide-y divide-neutral-100 text-xs">
+                        {spots.map((spot) => {
+                          const catColor = getCategoryColor(spot.category);
+                          return (
+                            <tr key={spot.id} className="hover:bg-neutral-50/50 transition-colors">
+                              <td className="py-3.5 px-4 text-center font-mono text-neutral-400 font-bold">{spot.id}</td>
+                              <td className="py-3.5 px-4">
+                                <span className={`inline-block w-3 h-3 rounded-full ${catColor.bg} border border-white shadow-sm ring-2 ring-neutral-100`} />
+                              </td>
+                              <td className="py-3.5 px-4 font-bold text-neutral-800">{spot.name}</td>
+                              <td className="py-3.5 px-4">
+                                <span className={`text-[9px] font-black px-2.5 py-0.5 rounded-full border ${catColor.textBg}`}>
+                                  {catColor.label}
+                                </span>
+                              </td>
+                              <td className="py-3.5 px-4 font-mono text-neutral-500">
+                                {spot.x.toFixed(1)}%, {spot.y.toFixed(1)}%
+                              </td>
+                              <td className="py-3.5 px-4 text-neutral-400 truncate max-w-xs" title={spot.description}>
+                                {spot.description || '(説明文なし)'}
+                              </td>
+                              <td className="py-3.5 px-4 text-center">
+                                <button
+                                  onClick={async () => {
+                                    if (confirm(`イベントスポット「${spot.name}」を完全にデータベースから削除しますか？`)) {
+                                      try {
+                                        triggerNotification('🗑️ スポットをデータベースから削除中...');
+                                        const success = await api.deleteSpot(spot.id);
+                                        if (success) {
+                                          setSpots((prev) => prev.filter((s) => s.id !== spot.id));
+                                          triggerNotification('✨ スポットと連動クチコミを綺麗に削除しました！');
+                                        } else {
+                                          triggerNotification('❌ スポット削除中にエラーが発生しました');
+                                        }
+                                      } catch (err) {
+                                        console.error(err);
+                                        triggerNotification('❌ 送信中にエラーが発生しました');
+                                      }
+                                    }
+                                  }}
+                                  className="p-1 px-2.5 rounded-lg border border-neutral-100 hover:border-rose-100 hover:bg-rose-50 text-neutral-400 hover:text-rose-600 transition-colors text-[10px] font-bold"
+                                  title="スポットを完全消去"
+                                >
+                                  削除
+                                </button>
+                              </td>
+                            </tr>
+                          );
+                        })}
+                      </tbody>
+                    </table>
+                  )}
+                </div>
+              </div>
+
+              {/* Categories List Table UI block */}
+              <div className="bg-white rounded-3xl border border-neutral-200/60 overflow-hidden shadow-sm">
+                <div className="p-5 border-b border-neutral-100 flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-neutral-50/40">
+                  <div>
+                    <h3 className="text-sm font-black text-neutral-800 flex items-center gap-1.5">
+                      <span>🏷️ 追加済みカスタムカテゴリー一覧 ({customCategories.length}個)</span>
+                    </h3>
+                    <p className="text-[10px] text-neutral-400">
+                      これらは基本カテゴリー(ステージ・展示・模擬店・特別催し)に加えて、あなた自身が追加した自由名カテゴリーです。不要なものは個別に削除できます。
+                    </p>
+                  </div>
+                </div>
+
+                <div className="overflow-x-auto">
+                  <table className="w-full text-left border-collapse">
+                    <thead>
+                      <tr className="bg-neutral-50 border-b border-neutral-200/60 text-[10px] font-black text-neutral-500 uppercase tracking-wider font-sans">
+                        <th className="py-3 px-4">内部ID</th>
+                        <th className="py-3 px-4">表示名</th>
+                        <th className="py-3 px-4">カラー</th>
+                        <th className="py-3 px-4 w-28 text-center">操作</th>
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y divide-neutral-100 text-xs">
+                      {/* Standard built-in Categories shown as Read-only */}
+                      {DEFAULT_CATEGORIES.map((c) => (
+                        <tr key={c.id} className="bg-neutral-50/30 text-neutral-400">
+                          <td className="py-3.5 px-4 font-mono font-bold text-neutral-450">{c.id} (規定)</td>
+                          <td className="py-3.5 px-4 font-bold text-neutral-550 flex items-center gap-2">
+                            <span className="w-2 h-2 rounded-full bg-neutral-400" />
+                            {c.label}
+                          </td>
+                          <td className="py-3.5 px-4 uppercase font-mono tracking-wider font-semibold text-[10px]">{c.color}</td>
+                          <td className="py-3.5 px-4 text-center">
+                            <span className="text-[9px] font-semibold text-neutral-400 bg-neutral-100 border border-neutral-200/40 px-2 py-0.5 rounded">システム保護</span>
+                          </td>
+                        </tr>
+                      ))}
+
+                      {/* Custom User-defined Categories inside database */}
+                      {customCategories.map((c) => (
+                        <tr key={c.id} className="hover:bg-neutral-50/50 transition-colors">
+                          <td className="py-3.5 px-4 font-mono font-bold text-neutral-500">{c.id}</td>
+                          <td className="py-3.5 px-4 font-bold text-neutral-800 flex items-center gap-2">
+                            <span className={`w-2 h-2 rounded-full ${
+                              c.color === 'indigo' ? 'bg-indigo-500' :
+                              c.color === 'emerald' ? 'bg-emerald-500' :
+                              c.color === 'amber' ? 'bg-amber-500' :
+                              c.color === 'violet' ? 'bg-violet-500' :
+                              c.color === 'teal' ? 'bg-teal-500' :
+                              c.color === 'orange' ? 'bg-orange-500' :
+                              c.color === 'fuchsia' ? 'bg-fuchsia-500' :
+                              'bg-rose-500'
+                            }`} />
+                            {c.label}
+                          </td>
+                          <td className="py-3.5 px-4 uppercase font-mono tracking-wider font-bold text-indigo-500 text-[10px]">{c.color}</td>
+                          <td className="py-3.5 px-4 text-center">
+                            <button
+                              onClick={async () => {
+                                if (confirm(`カテゴリー「${c.label}」を完全に削除しますか？ (このカテゴリーに属するスポットは自動的に「特別催し・その他」に割り当てられます)`)) {
+                                  try {
+                                    triggerNotification('🗑️ カテゴリーを削除中...');
+                                    const success = await api.deleteCategory(c.id);
+                                    if (success) {
+                                      setCustomCategories(prev => prev.filter(item => item.id !== c.id));
+                                      triggerNotification('✨ カテゴリーを完全に消去しました。');
+                                    }
+                                  } catch (err) {
+                                    console.error(err);
+                                    triggerNotification('❌ カテゴリー消去に失敗しました');
+                                  }
+                                }
+                              }}
+                              className="p-1 px-2.5 rounded-lg border border-neutral-100 hover:border-rose-100 hover:bg-rose-50 text-neutral-400 hover:text-rose-600 transition-colors text-[10px] font-bold"
+                            >
+                              削除
+                            </button>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
             </div>
           </div>
         )}
