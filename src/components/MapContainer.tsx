@@ -4,7 +4,7 @@
  */
 
 import React, { useState, useRef, useEffect } from 'react';
-import { Spot } from '../types';
+import { Spot, Category } from '../types';
 import { MapPin, RotateCw, Layers, Plus, Compass, Sparkles, Navigation } from 'lucide-react';
 
 interface MapContainerProps {
@@ -14,6 +14,7 @@ interface MapContainerProps {
   isAdmin: boolean;
   onAddSpotClick: (x: number, y: number) => void;
   selectedCategory: string | null;
+  categories: Category[];
 }
 
 export default function MapContainer({
@@ -23,6 +24,7 @@ export default function MapContainer({
   isAdmin,
   onAddSpotClick,
   selectedCategory,
+  categories,
 }: MapContainerProps) {
   const [imageError, setImageError] = useState(false);
   
@@ -200,26 +202,54 @@ export default function MapContainer({
 
   // Pin category styling maps
   const getCategoryColor = (category: string) => {
-    switch (category) {
-      case 'stage': // Indigo
+    const matchedCategory = categories.find((c) => c.id === category);
+    const colorScheme = matchedCategory ? matchedCategory.color : 'rose';
+    
+    switch (colorScheme) {
+      case 'indigo':
         return {
           bg: 'bg-indigo-500',
           ring: 'ring-indigo-500/30',
           text: 'text-indigo-500 hover:text-white',
         };
-      case 'exhibition': // Emerald
+      case 'emerald':
         return {
           bg: 'bg-emerald-500',
           ring: 'ring-emerald-500/30',
           text: 'text-emerald-500 hover:text-white',
         };
-      case 'food_shop': // Amber
+      case 'amber':
         return {
           bg: 'bg-amber-500',
           ring: 'ring-amber-500/30',
           text: 'text-amber-500 hover:text-white',
         };
-      default: // Rose
+      case 'violet':
+        return {
+          bg: 'bg-violet-500',
+          ring: 'ring-violet-500/30',
+          text: 'text-violet-500 hover:text-white',
+        };
+      case 'teal':
+        return {
+          bg: 'bg-teal-500',
+          ring: 'ring-teal-500/30',
+          text: 'text-teal-500 hover:text-white',
+        };
+      case 'orange':
+        return {
+          bg: 'bg-orange-500',
+          ring: 'ring-orange-500/30',
+          text: 'text-orange-500 hover:text-white',
+        };
+      case 'fuchsia':
+        return {
+          bg: 'bg-fuchsia-500',
+          ring: 'ring-fuchsia-500/30',
+          text: 'text-fuchsia-500 hover:text-white',
+        };
+      case 'rose':
+      default:
         return {
           bg: 'bg-rose-500',
           ring: 'ring-rose-500/30',

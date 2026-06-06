@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import { Spot, Review } from '../types';
+import { Spot, Review, Category } from '../types';
 
 // Detect preview mode
 const isLocalDebug = 
@@ -17,12 +17,15 @@ const isLocalDebug =
 const STORAGE_KEYS = {
   SPOTS: 'kuchicomi_spots',
   REVIEWS: 'kuchicomi_reviews',
+  CATEGORIES: 'kuchicomi_categories',
 };
 
 /// Seed mock data - empty initially as requested
 const MOCK_SPOTS: Spot[] = [];
 
 const MOCK_REVIEWS: Review[] = [];
+
+const MOCK_CATEGORIES: Category[] = [];
 
 // Ensure initial setup of localStorage
 if (typeof window !== 'undefined') {
@@ -31,6 +34,27 @@ if (typeof window !== 'undefined') {
   }
   if (!localStorage.getItem(STORAGE_KEYS.REVIEWS)) {
     localStorage.setItem(STORAGE_KEYS.REVIEWS, JSON.stringify(MOCK_REVIEWS));
+  }
+  if (!localStorage.getItem(STORAGE_KEYS.CATEGORIES)) {
+    localStorage.setItem(STORAGE_KEYS.CATEGORIES, JSON.stringify(MOCK_CATEGORIES));
+  }
+}
+
+// Low-level helper functions for mock DB
+function getLocalStorageCategories(): Category[] {
+  try {
+    const data = localStorage.getItem(STORAGE_KEYS.CATEGORIES);
+    return data ? JSON.parse(data) : MOCK_CATEGORIES;
+  } catch (e) {
+    return MOCK_CATEGORIES;
+  }
+}
+
+function setLocalStorageCategories(categories: Category[]) {
+  try {
+    localStorage.setItem(STORAGE_KEYS.CATEGORIES, JSON.stringify(categories));
+  } catch (e) {
+    console.error('Error saving categories to localStorage', e);
   }
 }
 
@@ -199,12 +223,75 @@ export const api = {
       });
       if (!response.ok) throw new Error('Failed to reset database');
       hasFallbackTriggered = false;
+      localStorage.setItem(STORAGE_KEYS.CATEGORIES, JSON.stringify([]));
       return response.ok;
     } catch (error) {
       console.warn('API error, falling back to local storage reset:', error);
       hasFallbackTriggered = true;
       localStorage.setItem(STORAGE_KEYS.SPOTS, JSON.stringify([]));
       localStorage.setItem(STORAGE_KEYS.REVIEWS, JSON.stringify([]));
+      localStorage.setItem(STORAGE_KEYS.CATEGORIES, JSON.stringify([]));
+      return true;
+    }
+  },
+
+  /**
+   * Fetch all custom categories
+   */
+  async getCategories(): Promise<Category[]> {
+    try {
+      const response = await fetch('/api/categories');
+      if (!response.ok) throw new Error('Failed to fetch categories');
+      hasFallbackTriggered = false;
+      return await response.json();
+    } catch (error) {
+      console.warn('API error, falling back to local storage categories:', error);
+      hasFallbackTriggered = true;
+      return getLocalStorageCategories();
+    }
+  },
+
+  /**
+   * Save a dynamic category
+   */
+  async saveCategory(category: Category): Promise<Category> {
+    try {
+      const response = await fetch('/api/categories', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(category),
+      });
+      if (!response.ok) throw new Error('Failed to save category');
+      hasFallbackTriggered = false;
+      const data = await response.json();
+      return data.category || category;
+    } catch (error) {
+      console.warn('API error, falling back to local storage categories save:', error);
+      hasFallbackTriggered = true;
+      const categories = getLocalStorageCategories();
+      const updated = categories.filter(c => c.id !== category.id);
+      updated.push(category);
+      setLocalStorageCategories(updated);
+      return category;
+    }
+  },
+
+  /**
+   * Delete a category
+   */
+  async deleteCategory(id: string): Promise<boolean> {
+    try {
+      const response = await fetch(`/api/categories?id=${id}`, {
+        method: 'DELETE',
+      });
+      if (!response.ok) throw new Error('Failed to delete category');
+      hasFallbackTriggered = false;
+      return response.ok;
+    } catch (error) {
+      console.warn('API error, falling back to local storage categories delete:', error);
+      hasFallbackTriggered = true;
+      const categories = getLocalStorageCategories();
+      setLocalStorageCategories(categories.filter(c => c.id !== id));
       return true;
     }
   }

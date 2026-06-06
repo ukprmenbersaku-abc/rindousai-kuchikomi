@@ -4,7 +4,7 @@
  */
 
 import React, { useState, useEffect } from 'react';
-import { Spot } from './types';
+import { Spot, Category } from './types';
 import { api } from './lib/api';
 import Header from './components/Header';
 import SuggestionCards from './components/SuggestionCards';
@@ -17,10 +17,20 @@ import {
   Search, Star, Send, Trash2, Heart, MessageSquare, ChevronLeft, Compass
 } from 'lucide-react';
 
+const DEFAULT_CATEGORIES: Category[] = [
+  { id: 'stage', label: 'ステージ発表', color: 'indigo' },
+  { id: 'exhibition', label: '展示企画', color: 'emerald' },
+  { id: 'food_shop', label: '模擬店・バザー', color: 'amber' },
+  { id: 'event', label: '特別催し', color: 'rose' },
+];
+
 export default function App() {
   const [isAdmin, setIsAdmin] = useState(false);
   const [activeTab, setActiveTab] = useState('home');
   const [spots, setSpots] = useState<Spot[]>([]);
+  const [customCategories, setCustomCategories] = useState<Category[]>([]);
+  const [newCategoryLabel, setNewCategoryLabel] = useState('');
+  const [newCategoryColor, setNewCategoryColor] = useState('indigo');
   const [selectedSpot, setSelectedSpot] = useState<Spot | null>(null);
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
   const [addingCoord, setAddingCoord] = useState<{ x: number; y: number } | null>(null);
@@ -101,33 +111,62 @@ export default function App() {
     }
   };
 
-  const getCategoryColor = (category: string) => {
-    switch (category) {
-      case 'stage':
-        return {
-          label: 'ステージ発表',
-          textBg: 'bg-indigo-50 border-indigo-150 text-indigo-700',
-          bg: 'bg-indigo-500',
-        };
-      case 'exhibition':
-        return {
-          label: '展示企画',
-          textBg: 'bg-emerald-50 border-emerald-150 text-emerald-700',
-          bg: 'bg-emerald-500',
-        };
-      case 'food_shop':
-        return {
-          label: '模擬店・バザー',
-          textBg: 'bg-amber-50 border-amber-150 text-amber-700',
-          bg: 'bg-amber-500',
-        };
-      default:
-        return {
-          label: '特別催し・その他',
-          textBg: 'bg-rose-50 border-rose-150 text-rose-700',
-          bg: 'bg-rose-500',
-        };
+  const categories: Category[] = [...DEFAULT_CATEGORIES, ...customCategories];
+
+  const getCategoryColor = (categoryId: string) => {
+    const found = categories.find(c => c.id === categoryId);
+    if (!found) {
+      return {
+        label: '特別催し・その他',
+        textBg: 'bg-rose-50 border-rose-150 text-rose-700',
+        bg: 'bg-rose-500',
+      };
     }
+
+    let textBgStr = 'bg-rose-50 border-rose-150 text-rose-700';
+    let bgStr = 'bg-rose-500';
+
+    switch (found.color) {
+      case 'indigo':
+        textBgStr = 'bg-indigo-50 border-indigo-150 text-indigo-700';
+        bgStr = 'bg-indigo-500';
+        break;
+      case 'emerald':
+        textBgStr = 'bg-emerald-50 border-emerald-150 text-emerald-700';
+        bgStr = 'bg-emerald-500';
+        break;
+      case 'amber':
+        textBgStr = 'bg-amber-50 border-amber-150 text-amber-700';
+        bgStr = 'bg-amber-500';
+        break;
+      case 'violet':
+        textBgStr = 'bg-violet-50 border-violet-150 text-violet-700';
+        bgStr = 'bg-violet-500';
+        break;
+      case 'teal':
+        textBgStr = 'bg-teal-50 border-teal-150 text-teal-700';
+        bgStr = 'bg-teal-500';
+        break;
+      case 'orange':
+        textBgStr = 'bg-orange-50 border-orange-150 text-orange-700';
+        bgStr = 'bg-orange-500';
+        break;
+      case 'fuchsia':
+        textBgStr = 'bg-fuchsia-50 border-fuchsia-150 text-fuchsia-700';
+        bgStr = 'bg-fuchsia-500';
+        break;
+      case 'rose':
+      default:
+        textBgStr = 'bg-rose-50 border-rose-150 text-rose-700';
+        bgStr = 'bg-rose-500';
+        break;
+    }
+
+    return {
+      label: found.label,
+      textBg: textBgStr,
+      bg: bgStr,
+    };
   };
 
   // Filter spots based on both parent tag filters and left sidebar search inputs
@@ -153,8 +192,18 @@ export default function App() {
     }
   };
 
+  const loadCategories = async () => {
+    try {
+      const data = await api.getCategories();
+      setCustomCategories(data);
+    } catch (e) {
+      console.error('Error loading categories:', e);
+    }
+  };
+
   useEffect(() => {
     loadSpots();
+    loadCategories();
 
     // Check size on mount
     const handleResize = () => {
@@ -489,6 +538,113 @@ export default function App() {
                             </button>
                           </div>
 
+                          {/* Dynamic Category Management Section */}
+                          <div className="border-t border-slate-805/80 pt-3 mt-3 mb-2 pb-3">
+                            <span className="text-[10px] font-black text-indigo-400 block mb-2 tracking-wide">
+                              🏷️ カテゴリーの追加・管理
+                            </span>
+                            
+                            <div className="bg-slate-950 p-2.5 rounded-xl border border-slate-800/80 mb-2">
+                              <div className="flex gap-2 mb-2">
+                                <input
+                                  type="text"
+                                  placeholder="カテゴリー名を入力..."
+                                  value={newCategoryLabel}
+                                  onChange={(e) => setNewCategoryLabel(e.target.value)}
+                                  className="flex-1 bg-slate-900 border border-slate-800 rounded-lg px-2 py-1 text-[10px] text-white placeholder-slate-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
+                                />
+                                
+                                <select
+                                  value={newCategoryColor}
+                                  onChange={(e) => setNewCategoryColor(e.target.value)}
+                                  className="bg-slate-900 border border-slate-800 rounded-lg px-1.5 py-1 text-[10px] text-slate-300 focus:outline-none"
+                                >
+                                  <option value="indigo">藍色 (Indigo)</option>
+                                  <option value="emerald">緑色 (Emerald)</option>
+                                  <option value="amber">琥珀色 (Amber)</option>
+                                  <option value="rose">薔薇色 (Rose)</option>
+                                  <option value="violet">紫色 (Violet)</option>
+                                  <option value="teal">鴨羽色 (Teal)</option>
+                                  <option value="orange">橙色 (Orange)</option>
+                                  <option value="fuchsia">紅紫色 (Fuchsia)</option>
+                                </select>
+                              </div>
+
+                              <button
+                                type="button"
+                                onClick={async () => {
+                                  if (!newCategoryLabel.trim()) return;
+                                  
+                                  const cleanId = 'cat_' + Math.random().toString(36).substr(2, 9);
+                                  const newCat: Category = {
+                                    id: cleanId,
+                                    label: newCategoryLabel.trim(),
+                                    color: newCategoryColor,
+                                  };
+                                  
+                                  try {
+                                    triggerNotification('🏷️ カテゴリーを登録中...');
+                                    const saved = await api.saveCategory(newCat);
+                                    setCustomCategories(prev => [...prev, saved]);
+                                    setNewCategoryLabel('');
+                                    triggerNotification(`✅ 新しいカテゴリー「${saved.label}」を作成しました！`);
+                                  } catch (err) {
+                                    console.error(err);
+                                    triggerNotification('❌ カテゴリー作成に失敗しました');
+                                  }
+                                }}
+                                className="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-extrabold text-[10px] transition-colors rounded-lg py-1 px-2.5"
+                              >
+                                新しいカテゴリーを作成・追加
+                              </button>
+                            </div>
+
+                            {/* Render list of existing dynamic categories */}
+                            {customCategories.length > 0 && (
+                              <div className="space-y-1.5 max-h-24 overflow-y-auto pr-1">
+                                {customCategories.map((c) => (
+                                  <div key={c.id} className="flex items-center justify-between bg-slate-950/60 hover:bg-slate-950 px-2.5 py-1 rounded-lg border border-slate-800/40">
+                                    <div className="flex items-center gap-1.5">
+                                      <span className={`w-1.5 h-1.5 rounded-full ${
+                                        c.color === 'indigo' ? 'bg-indigo-500' :
+                                        c.color === 'emerald' ? 'bg-emerald-500' :
+                                        c.color === 'amber' ? 'bg-amber-500' :
+                                        c.color === 'violet' ? 'bg-violet-500' :
+                                        c.color === 'teal' ? 'bg-teal-500' :
+                                        c.color === 'orange' ? 'bg-orange-500' :
+                                        c.color === 'fuchsia' ? 'bg-fuchsia-500' :
+                                        'bg-rose-500'
+                                      }`} />
+                                      <span className="text-[10px] font-bold text-slate-200">{c.label}</span>
+                                    </div>
+                                    <button
+                                      type="button"
+                                      onClick={async () => {
+                                        if (confirm(`カテゴリー「${c.label}」を本当に削除しますか？ (このカテゴリーに属するスポットは「特別催し・その他」として表示されます)`)) {
+                                          try {
+                                            triggerNotification('🗑️ カテゴリーを削除中...');
+                                            const success = await api.deleteCategory(c.id);
+                                            if (success) {
+                                              setCustomCategories(prev => prev.filter(item => item.id !== c.id));
+                                              triggerNotification('🗑️ カテゴリーを削除しました。');
+                                            }
+                                          } catch (err) {
+                                            console.error(err);
+                                            triggerNotification('❌ カテゴリー削除に失敗しました');
+                                          }
+                                        }
+                                      }}
+                                      className="p-1 rounded text-slate-500 hover:text-rose-400 hover:bg-slate-900 transition-colors"
+                                      title="このカテゴリーを削除"
+                                    >
+                                      <Trash2 className="w-3 h-3" />
+                                    </button>
+                                  </div>
+                                ))}
+                              </div>
+                            )}
+                          </div>
+
                           {/* Quick D1 setup dropdown help */}
                           <div className="border-t border-slate-800/80 pt-2.5">
                             <button
@@ -562,22 +718,40 @@ export default function App() {
                       カテゴリーで絞り込む
                     </span>
                     <div className="flex flex-wrap gap-1">
-                      {[
-                        { id: null, label: 'すべて', color: 'bg-neutral-100 border-neutral-200 text-neutral-700' },
-                        { id: 'stage', label: 'ステージ', color: 'bg-indigo-50 border-indigo-100 text-indigo-700' },
-                        { id: 'exhibition', label: '展示企画', color: 'bg-emerald-50 border-emerald-100 text-emerald-700' },
-                        { id: 'food_shop', label: '模擬店', color: 'bg-amber-50 border-amber-100 text-amber-700' },
-                        { id: 'other', label: '特別催し', color: 'bg-rose-50 border-rose-100 text-rose-700' },
-                      ].map((cat) => {
+                      <button
+                        onClick={() => setSelectedCategory(null)}
+                        className={`px-2.5 py-1 text-[10px] font-bold rounded-lg border transition-all duration-150 ${
+                          selectedCategory === null 
+                            ? 'bg-neutral-900 border-neutral-900 text-white shadow-sm' 
+                            : 'bg-neutral-100 border-neutral-200 text-neutral-700 hover:opacity-80'
+                        }`}
+                      >
+                        すべて
+                      </button>
+                      
+                      {categories.map((cat) => {
                         const isSelected = selectedCategory === cat.id;
+                        
+                        let colorClasses = 'bg-rose-50 border-rose-100 text-rose-700';
+                        switch (cat.color) {
+                          case 'indigo': colorClasses = 'bg-indigo-50 border-indigo-100 text-indigo-700'; break;
+                          case 'emerald': colorClasses = 'bg-emerald-50 border-emerald-100 text-emerald-700'; break;
+                          case 'amber': colorClasses = 'bg-amber-50 border-amber-100 text-amber-700'; break;
+                          case 'violet': colorClasses = 'bg-violet-50 border-violet-100 text-violet-700'; break;
+                          case 'teal': colorClasses = 'bg-teal-50 border-teal-100 text-teal-700'; break;
+                          case 'orange': colorClasses = 'bg-orange-50 border-orange-100 text-orange-700'; break;
+                          case 'fuchsia': colorClasses = 'bg-fuchsia-50 border-fuchsia-100 text-fuchsia-700'; break;
+                          case 'rose': default: colorClasses = 'bg-rose-50 border-rose-100 text-rose-700'; break;
+                        }
+                        
                         return (
                           <button
-                            key={cat.id || 'all'}
+                            key={cat.id}
                             onClick={() => setSelectedCategory(cat.id)}
                             className={`px-2.5 py-1 text-[10px] font-bold rounded-lg border transition-all duration-150 ${
                               isSelected 
                                 ? 'bg-neutral-900 border-neutral-900 text-white shadow-sm' 
-                                : `${cat.color} hover:opacity-80`
+                                : `${colorClasses} hover:opacity-80`
                             }`}
                           >
                             {cat.label}
@@ -865,6 +1039,7 @@ export default function App() {
                 isAdmin={isAdmin}
                 onAddSpotClick={handleAddSpotClick}
                 selectedCategory={selectedCategory}
+                categories={categories}
               />
             </div>
 
@@ -1115,6 +1290,7 @@ export default function App() {
           y={addingCoord.y}
           onClose={() => setAddingCoord(null)}
           onSave={handleSaveSpot}
+          categories={categories}
         />
       )}
 

@@ -14,6 +14,12 @@ CREATE TABLE IF NOT EXISTS rindou_kuchikomi_spots (
   created_at TEXT DEFAULT CURRENT_TIMESTAMP
 );
 
+CREATE TABLE IF NOT EXISTS rindou_kuchikomi_categories (
+  id TEXT PRIMARY KEY,
+  label TEXT NOT NULL,
+  color TEXT NOT NULL
+);
+
 CREATE TABLE IF NOT EXISTS rindou_kuchikomi_reviews (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
   spot_id INTEGER NOT NULL,

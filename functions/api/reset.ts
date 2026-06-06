@@ -26,7 +26,14 @@ export const onRequestPost: PagesFunction<Env> = async (context) => {
     // 2. Delete all spots (including the 4 default ones, making it fully blank and fresh)
     await DB.prepare("DELETE FROM rindou_kuchikomi_spots").bind().run();
 
-    return new Response(JSON.stringify({ success: true, message: "Database reviews and all spots cleared completely." }), {
+    // 3. Delete all custom categories
+    try {
+      await DB.prepare("DELETE FROM rindou_kuchikomi_categories").bind().run();
+    } catch (_) {
+      // Ignored if table doesn't exist yet
+    }
+
+    return new Response(JSON.stringify({ success: true, message: "Database reviews, spots, and categories cleared completely." }), {
       headers: { "Content-Type": "application/json" },
     });
   } catch (error: any) {

@@ -3,13 +3,19 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
+export interface Category {
+  id: string;
+  label: string;
+  color: string; // e.g. 'indigo', 'emerald', 'amber', 'rose', 'violet', 'teal', 'orange', 'fuchsia'
+}
+
 export interface Spot {
   id: number;
   name: string;
   x: number; // percentage coordinate 0 to 100
   y: number; // percentage coordinate 0 to 100
   description: string;
-  category: 'stage' | 'exhibition' | 'food_shop' | 'event';
+  category: string;
   createdAt?: string;
 }
 
