@@ -19,80 +19,10 @@ const STORAGE_KEYS = {
   REVIEWS: 'kuchicomi_reviews',
 };
 
-// Seed mock data corresponding to Chikumano Junior High School Rindo Festival
-const MOCK_SPOTS: Spot[] = [
-  {
-    id: 1,
-    name: "第1体育館 (メインステージ)",
-    x: 42.5,
-    y: 35.0,
-    description: "オープニングセレモニー、合唱コンクール、吹奏楽部の演奏、有志による演劇やダンスなど、りんどう祭の熱気が最高潮に達する特設ステージです！",
-    category: "stage"
-  },
-  {
-    id: 2,
-    name: "3階 2年A組教室 (ステンドグラス光のアート)",
-    x: 22.0,
-    y: 55.5,
-    description: "クラス全員で1枚ずつ心を込めて作った色透明フィルムのモザイクアート展示。陽の光が差し込むと教室全体が万華鏡のように輝きます。",
-    category: "exhibition"
-  },
-  {
-    id: 3,
-    name: "中庭テント (PTAバザー＆松本おやき模擬店)",
-    x: 62.5,
-    y: 72.0,
-    description: "松本名物の「おやき(あんこ・きんぴら)」やフランクフルト、冷たいジュースを販売しています。中庭の青空テーブルで一休みしていきませんか？",
-    category: "food_shop"
-  },
-  {
-    id: 4,
-    name: "多目的ホール (美術部・書道部 合同作品展)",
-    x: 81.3,
-    y: 28.5,
-    description: "美術部が描いた巨大な共同制作絵画と、書道部が大きな紙に力強く書き上げたパフォーマンス作品をメイン展示。圧巻のアート空間です。",
-    category: "exhibition"
-  }
-];
+/// Seed mock data - empty initially as requested
+const MOCK_SPOTS: Spot[] = [];
 
-const MOCK_REVIEWS: Review[] = [
-  {
-    id: 1,
-    spotId: 1,
-    rating: 5,
-    author: "りんどうっ子",
-    role: "3年生",
-    comment: "合唱コンクールの金賞を目指して毎日練習した成果が本番で発揮できました！体育館の響きも綺麗で最高の思い出です！",
-    createdAt: "2026-05-30T14:22:00Z"
-  },
-  {
-    id: 2,
-    spotId: 2,
-    rating: 5,
-    author: "ちくまのファン",
-    role: "保護者",
-    comment: "教室の窓ガラス一面に広がるステンドグラス風モザイクに感動しました。生徒の細かい作業努力が目に浮かび涙が出そうです。",
-    createdAt: "2026-05-31T01:10:00Z"
-  },
-  {
-    id: 3,
-    spotId: 3,
-    rating: 4,
-    author: "おやき大好き",
-    role: "2年生",
-    comment: "おやきの野沢菜味が、モチモチの皮とピリ辛の具で絶品でした！友達と芝生に座っておしゃべりしながら美味しく食べました。",
-    createdAt: "2026-05-29T18:05:00Z"
-  },
-  {
-    id: 4,
-    spotId: 4,
-    rating: 5,
-    author: "アート同好会",
-    role: "1年生",
-    comment: "先輩達の作品のレベルが高すぎて驚きました！書道部のダイナミックな文字の勢いは本当にかっこいいです。",
-    createdAt: "2026-05-31T08:30:00Z"
-  }
-];
+const MOCK_REVIEWS: Review[] = [];
 
 // Ensure initial setup of localStorage
 if (typeof window !== 'undefined') {
@@ -273,8 +203,8 @@ export const api = {
     } catch (error) {
       console.warn('API error, falling back to local storage reset:', error);
       hasFallbackTriggered = true;
-      localStorage.setItem(STORAGE_KEYS.SPOTS, JSON.stringify(MOCK_SPOTS));
-      localStorage.setItem(STORAGE_KEYS.REVIEWS, JSON.stringify(MOCK_REVIEWS));
+      localStorage.setItem(STORAGE_KEYS.SPOTS, JSON.stringify([]));
+      localStorage.setItem(STORAGE_KEYS.REVIEWS, JSON.stringify([]));
       return true;
     }
   }

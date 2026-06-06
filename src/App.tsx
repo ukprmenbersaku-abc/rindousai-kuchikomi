@@ -449,21 +449,21 @@ export default function App() {
                           </div>
 
                           <p className="text-[10px] text-slate-300 leading-relaxed mb-3">
-                            マップ上の企画イベントを管理します。「データをすべて消去」を選択しても、<strong>最初から入っている基本の4スポット（メインステージ、ステンドグラス、おやき模擬店、美術書道展）は保護されて消去されません</strong>（一般の口コミや自分で後から追加したスポットのみを綺麗にリセットします）。
+                            マップ上のすべての企画イベントや口コミ投稿データを一括管理します。「データをすべて消去」を選択すると、登録されたすべてのスポット情報（座標位置も含む）と一般の書き込み口コミを含む、すべてのデータがデータベースから完全に消去され、まっさらな状態から新規設定できます。
                           </p>
 
                           <div className="grid grid-cols-2 gap-2 mb-3">
                             {/* Reset/Clear button */}
                             <button
                               onClick={async () => {
-                                if (window.confirm('追加したカスタムスポットとすべての口コミを消去して初期化します。（※最初からある第1体育館などの主要4スポットと位置情報は消去されずにきちんと維持されます！）よろしいですか？')) {
+                                if (window.confirm('登録されているすべてのイベントスポットと一連の口コミをデータベースから完全に消去して初期化します。本当によろしいですか？')) {
                                   try {
-                                    triggerNotification('🔄 データベース初期化中...');
+                                    triggerNotification('🔄 データベースを完全初期化中...');
                                     const success = await api.resetDatabase();
                                     if (success) {
                                       await loadSpots();
                                       setSelectedSpot(null);
-                                      triggerNotification('✨ すべての一般口コミを消去し、標準の4スポットにリセットしました！');
+                                      triggerNotification('✨ データベースを完全に初期化し、まっさらな状態になりました！');
                                     } else {
                                       triggerNotification('❌ 初期化中にエラーが発生しました');
                                     }
@@ -592,9 +592,13 @@ export default function App() {
                     {searchedSpots.length === 0 ? (
                       <div className="flex flex-col items-center justify-center p-8 text-center bg-white rounded-2xl border border-dashed border-neutral-200 mt-2">
                         <MapPin className="w-8 h-8 text-neutral-300 mb-2" />
-                        <p className="text-xs font-bold text-neutral-500">スポットが見つかりません</p>
-                        <p className="text-[10px] text-neutral-400 mt-1">
-                          キーワードを修正するか、フィルターをリセットしてください。
+                        <p className="text-xs font-bold text-neutral-500">
+                          {spots.length === 0 ? 'スポットが未登録です' : 'スポットが見つかりません'}
+                        </p>
+                        <p className="text-[10px] text-neutral-400 mt-1 leading-normal">
+                          {spots.length === 0 
+                            ? '右上または左の管理者モード等から、マップをタップ・クリックするか「新規イベント追加」から最初のステージや教室企画を登録しましょう！'
+                            : 'キーワードを修正するか、フィルターをリセットしてください。'}
                         </p>
                       </div>
                     ) : (
