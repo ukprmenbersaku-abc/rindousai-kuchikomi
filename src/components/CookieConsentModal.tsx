@@ -115,24 +115,24 @@ export default function CookieConsentModal({ onConsentComplete }: CookieConsentM
                 
                 <ul className="grid grid-cols-1 sm:grid-cols-2 gap-2 mt-2 font-medium text-neutral-600">
                   <li className="flex items-center gap-2 bg-white px-3 py-2 rounded-lg border border-neutral-200/50">
-                    <Sparkles className="w-3.5 h-3.5 text-neutral-450 shrink-0" />
+                    <Sparkles className="w-3.5 h-3.5 text-neutral-400 shrink-0" />
                     <span>加工（イラスト化）: <strong className="text-neutral-800">gemini.google.com</strong></span>
                   </li>
                   <li className="flex items-center gap-2 bg-white px-3 py-2 rounded-lg border border-neutral-200/50">
-                    <Lock className="w-3.5 h-3.5 text-neutral-450 shrink-0" />
+                    <Lock className="w-3.5 h-3.5 text-neutral-400 shrink-0" />
                     <span>コーディング: <strong className="text-neutral-800">Google AI Studio</strong></span>
                   </li>
                   <li className="flex items-center gap-2 bg-white px-3 py-2 rounded-lg border border-neutral-200/50 sm:col-span-2">
-                    <Cloud className="w-3.5 h-3.5 text-neutral-450 shrink-0" />
+                    <Cloud className="w-3.5 h-3.5 text-neutral-400 shrink-0" />
                     <span>デプロイシステム: <strong className="text-neutral-800">Cloudflare</strong></span>
                   </li>
                 </ul>
               </div>
 
               {/* Exact user credit request block - Settled Modern Neutral Style */}
-              <div className="bg-neutral-100/80 border-l-4 border-neutral-400 p-3.5 rounded-r-xl font-medium text-neutral-850 space-y-1.5 text-xs mt-3">
+              <div className="bg-neutral-100/80 border-l-4 border-neutral-450 p-3.5 rounded-r-xl font-medium text-neutral-800 space-y-1.5 text-xs mt-3">
                 <div className="font-black text-[10px] text-neutral-500 uppercase tracking-wider">必ずご確認ください（登録クレジット）</div>
-                <p className="leading-relaxed select-text font-serif italic text-neutral-750">
+                <p className="leading-relaxed select-text font-serif italic text-neutral-700">
                   「出典：上記URLの空中写真を基に、本ツール作成者がgemini.google.comを用いてイラスト化（加工）して作成。」
                 </p>
               </div>
@@ -145,9 +145,9 @@ export default function CookieConsentModal({ onConsentComplete }: CookieConsentM
 
           {/* Section 2: Cookie Usage Consent & Selector */}
           <div className="space-y-3 font-sans">
-            <div className="flex items-center gap-2 text-neutral-800">
+            <div className="flex items-center gap-2 text-neutral-850">
               <ShieldCheck className="w-4 h-4 text-neutral-500 shrink-0" />
-              <h3 className="text-xs font-black tracking-wide uppercase text-neutral-750">Cookie（クッキー）および類似技術の使用について</h3>
+              <h3 className="text-xs font-black tracking-wide uppercase text-neutral-805">Cookie（クッキー）および類似技術の使用について</h3>
             </div>
             
             <p className="text-xs text-neutral-500 leading-relaxed">
@@ -194,7 +194,7 @@ export default function CookieConsentModal({ onConsentComplete }: CookieConsentM
                       onChange={(e) => setConsentFunctional(e.target.checked)}
                       className="sr-only peer"
                     />
-                    <div className="w-10 h-5.5 bg-neutral-200 rounded-full peer peer-focus:ring-2 peer-focus:ring-indigo-300 peer-checked:after:translate-x-full after:content-[''] after:absolute after:top-0.5 after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4.5 after:w-4.5 after:transition-all peer-checked:bg-neutral-850"></div>
+                    <div className="w-10 h-5.5 bg-neutral-200 rounded-full peer peer-focus:ring-2 peer-focus:ring-indigo-300 peer-checked:after:translate-x-full after:content-[''] after:absolute after:top-0.5 after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4.5 after:w-4.5 after:transition-all peer-checked:bg-neutral-800"></div>
                     <span className="ml-2 font-bold text-[11px] text-neutral-600 min-w-[28px]">
                       {consentFunctional ? '許可' : '拒否'}
                     </span>
@@ -221,7 +221,7 @@ export default function CookieConsentModal({ onConsentComplete }: CookieConsentM
                       onChange={(e) => setConsentAnalytics(e.target.checked)}
                       className="sr-only peer"
                     />
-                    <div className="w-10 h-5.5 bg-neutral-200 rounded-full peer peer-focus:ring-2 peer-focus:ring-indigo-300 peer-checked:after:translate-x-full after:content-[''] after:absolute after:top-0.5 after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4.5 after:w-4.5 after:transition-all peer-checked:bg-neutral-850"></div>
+                    <div className="w-10 h-5.5 bg-neutral-200 rounded-full peer peer-focus:ring-2 peer-focus:ring-indigo-300 peer-checked:after:translate-x-full after:content-[''] after:absolute after:top-0.5 after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4.5 after:w-4.5 after:transition-all peer-checked:bg-neutral-800"></div>
                     <span className="ml-2 font-bold text-[11px] text-neutral-600 min-w-[28px]">
                       {consentAnalytics ? '許可' : '拒否'}
                     </span>
@@ -235,11 +235,11 @@ export default function CookieConsentModal({ onConsentComplete }: CookieConsentM
         </div>
 
         {/* Action Panel Buttons (Google UI Theme look) */}
-        <div className="bg-neutral-50 px-6 sm:px-8 py-5 border-t border-neutral-205 flex flex-col sm:flex-row items-center justify-end gap-3 shrink-0">
+        <div className="bg-neutral-50 px-6 sm:px-8 py-5 border-t border-neutral-200 flex flex-col sm:flex-row items-center justify-end gap-3 shrink-0">
           
           <button
             onClick={handleAcceptEssentialOnly}
-            className="w-full sm:w-auto px-4.5 py-2.5 bg-neutral-200 hover:bg-neutral-300/85 text-neutral-750 font-bold text-xs rounded-xl transition-all cursor-pointer text-center"
+            className="w-full sm:w-auto px-4.5 py-2.5 bg-neutral-200 hover:bg-neutral-300/85 text-neutral-700 font-bold text-xs rounded-xl transition-all cursor-pointer text-center"
             title="必須項目以外のすべてのCookieを拒否します"
           >
             必要項目以外を拒否
@@ -255,7 +255,7 @@ export default function CookieConsentModal({ onConsentComplete }: CookieConsentM
 
           <button
             onClick={handleAcceptAll}
-            className="w-full sm:w-auto px-5.5 py-2.5 bg-neutral-850 hover:bg-neutral-950 text-white font-black text-xs rounded-xl shadow-xs transition-all cursor-pointer text-center flex items-center justify-center gap-1.5"
+            className="w-full sm:w-auto px-5.5 py-2.5 bg-neutral-900 hover:bg-neutral-800 text-white font-bold text-xs rounded-xl shadow-sm transition-all cursor-pointer text-center flex items-center justify-center gap-1.5"
             title="すべての機能性に同意して開始します"
           >
             <Check className="w-3.5 h-3.5" />

@@ -688,94 +688,105 @@ export default function SpotSidebar({
                 )}
               </div>
 
-              {/* Submission Form integrated into bottom of Detail Sidebar */}
-              <div className="border-t border-neutral-100 p-4 bg-white text-left shrink-0">
-                <h4 className="text-[10px] font-bold text-neutral-700 uppercase tracking-wider mb-2">
-                  新しい口コミを投稿する
+              {/* Submission Form integrated into bottom of Detail Sidebar with premium spacing */}
+              <div className="border-t border-neutral-100 p-6 bg-white text-left shrink-0">
+                <h4 className="text-[11px] font-black text-neutral-800 uppercase tracking-wide mb-4 flex items-center gap-1.5">
+                  <span className="w-1.5 h-1.5 rounded-full bg-indigo-600" />
+                  <span>新しい口コミを投稿する</span>
                 </h4>
 
-                <form onSubmit={handleAddReview} className="space-y-3">
-                  <div className="flex flex-col sm:flex-row gap-3">
-                    
-                    {/* Rating stars select */}
-                    <div className="flex-1">
-                      <label className="block text-[8px] font-bold text-neutral-400 tracking-wider mb-1">
-                        星の評価 <span className="text-rose-500">*</span>
-                      </label>
-                      <div className="flex items-center gap-1">
-                        {[1, 2, 3, 4, 5].map((star) => (
-                          <button
-                            key={star}
-                            type="button"
-                            onClick={() => setNewRating(star)}
-                            className="focus:outline-none focus:scale-125 transition-transform duration-100"
+                <form onSubmit={handleAddReview} className="space-y-4">
+                  <div className="space-y-4">
+                    {/* Rating stars select and identity picker row */}
+                    <div className="grid grid-cols-1 gap-3">
+                      
+                      {/* Rating stars select */}
+                      <div>
+                        <label className="block text-[9px] font-bold text-neutral-500 tracking-wider mb-1.5">
+                          星の評価 (タップして選択) <span className="text-rose-500">*</span>
+                        </label>
+                        <div className="flex items-center gap-1.5">
+                          {[1, 2, 3, 4, 5].map((star) => (
+                            <button
+                              key={star}
+                              type="button"
+                              onClick={() => setNewRating(star)}
+                              className="focus:outline-none hover:scale-110 active:scale-95 transition-all duration-100"
+                            >
+                              <Star
+                                className={`w-4 h-4 transition-colors duration-100 ${
+                                  star <= newRating 
+                                    ? 'text-amber-500 fill-amber-500' 
+                                    : 'text-neutral-200 hover:text-amber-300'
+                                }`}
+                              />
+                            </button>
+                          ))}
+                        </div>
+                      </div>
+
+                      {/* Dropdown elements */}
+                      <div className="grid grid-cols-2 gap-2">
+                        <div>
+                          <label className="block text-[9px] font-bold text-neutral-500 tracking-wider mb-1.5">
+                            区分 <span className="text-rose-500">*</span>
+                          </label>
+                          <select
+                            value={newRole}
+                            onChange={(e: any) => setNewRole(e.target.value)}
+                            className="w-full px-2.5 py-1.5 text-[10px] font-medium rounded-lg border border-neutral-200 focus:outline-none bg-white focus:ring-1 focus:ring-indigo-500"
                           >
-                            <Star
-                              className={`w-3.5 h-3.5 transition-colors duration-100 ${
-                                star <= newRating 
-                                  ? 'text-amber-500 fill-amber-500' 
-                                  : 'text-neutral-200 hover:text-amber-300'
-                              }`}
-                            />
-                          </button>
-                        ))}
+                            <option value="1年生">1年生</option>
+                            <option value="2年生">2年生</option>
+                            <option value="3年生">3年生</option>
+                            <option value="教職員">教職員</option>
+                            <option value="保護者">保護者</option>
+                            <option value="OB・OG">OB・OG</option>
+                            <option value="地域住民">地域住民</option>
+                            <option value="その他">その他</option>
+                          </select>
+                        </div>
+                        <div>
+                          <label className="block text-[9px] font-bold text-neutral-500 tracking-wider mb-1.5">
+                            ペンネーム
+                          </label>
+                          <input
+                            type="text"
+                            value={newAuthor}
+                            onChange={(e) => setNewAuthor(e.target.value)}
+                            placeholder="匿名希望"
+                            maxLength={12}
+                            className="w-full px-2.5 py-1.5 text-[10px] rounded-lg border border-neutral-200 focus:outline-none focus:ring-1 focus:ring-indigo-500"
+                          />
+                        </div>
                       </div>
                     </div>
 
-                    {/* Dropdown elements */}
-                    <div className="flex gap-2 shrink-0">
-                      <div>
-                        <label className="block text-[8px] font-bold text-neutral-400 tracking-wider mb-1">
-                          区分 <span className="text-rose-500">*</span>
-                        </label>
-                        <select
-                          value={newRole}
-                          onChange={(e: any) => setNewRole(e.target.value)}
-                          className="px-2 py-1 text-[10px] rounded-lg border border-neutral-200 focus:outline-none bg-white focus:ring-1 focus:ring-indigo-500"
-                        >
-                          <option value="1年生">1年生</option>
-                          <option value="2年生">2年生</option>
-                          <option value="3年生">3年生</option>
-                          <option value="教職員">教職員</option>
-                          <option value="保護者">保護者</option>
-                          <option value="OB・OG">OB・OG</option>
-                          <option value="地域住民">地域住民</option>
-                          <option value="その他">その他</option>
-                        </select>
-                      </div>
-                      <div>
-                        <label className="block text-[8px] font-bold text-neutral-400 tracking-wider mb-1">
-                          ペンネーム
-                        </label>
-                        <input
-                          type="text"
-                          value={newAuthor}
-                          onChange={(e) => setNewAuthor(e.target.value)}
-                          placeholder="匿名希望"
-                          maxLength={12}
-                          className="w-24 px-2 py-1 text-[10px] rounded-lg border border-neutral-200 focus:outline-none focus:ring-1 focus:ring-indigo-500"
-                        />
-                      </div>
+                    {/* Text Input */}
+                    <div>
+                      <label className="block text-[9px] font-bold text-neutral-500 tracking-wider mb-1.5">
+                        口コミ・感想内容 <span className="text-rose-500">*</span>
+                      </label>
+                      <textarea
+                        required
+                        value={newComment}
+                        onChange={(e) => setNewComment(e.target.value)}
+                        placeholder="過ごした感想やおいしかった点、応援メッセージなどをお寄せください！"
+                        rows={3}
+                        maxLength={300}
+                        className="w-full px-3 py-2 text-[11px] rounded-xl border border-neutral-200 focus:outline-none focus:ring-2 focus:ring-indigo-500/10 focus:border-indigo-500 placeholder-neutral-400 resize-none leading-normal transition-all"
+                      />
                     </div>
                   </div>
 
-                  {/* Text Input */}
-                  <div className="relative">
-                    <textarea
-                      required
-                      value={newComment}
-                      onChange={(e) => setNewComment(e.target.value)}
-                      placeholder="過ごした感想やおいしかった点、応援メッセージなどをお寄せください！"
-                      rows={1}
-                      maxLength={300}
-                      className="w-full pl-3 pr-10 py-1.5 text-[11px] rounded-lg border border-neutral-200 focus:outline-none focus:ring-1 focus:ring-indigo-500 placeholder-neutral-400 resize-none leading-normal"
-                    />
+                  <div className="flex justify-end pt-1">
                     <button
                       type="submit"
                       disabled={isSubmittingReview || !newComment.trim()}
-                      className="absolute right-1.5 top-1.5 p-1 rounded-md bg-indigo-600 text-white disabled:opacity-40"
+                      className="w-full flex items-center justify-center gap-1.5 px-4 py-2.5 rounded-xl text-xs font-black bg-indigo-600 hover:bg-indigo-700 text-white disabled:opacity-40 shadow-sm transition-all shadow-indigo-600/10"
                     >
                       <Send className="w-3 h-3" />
+                      <span>口コミを送信する</span>
                     </button>
                   </div>
                 </form>

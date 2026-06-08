@@ -35,7 +35,7 @@ export const onRequestPost: PagesFunction<Env> = async (context) => {
   try {
     const { DB } = context.env;
     const data: any = await context.request.json();
-    const { name, x, y, description, category } = data;
+    const { id, name, x, y, description, category } = data;
 
     if (!name || x === undefined || y === undefined || !category) {
       return new Response(JSON.stringify({ error: "Missing required fields" }), {
@@ -44,11 +44,20 @@ export const onRequestPost: PagesFunction<Env> = async (context) => {
       });
     }
 
-    const info = await DB.prepare(
-      "INSERT INTO rindou_kuchikomi_spots (name, x, y, description, category) VALUES (?, ?, ?, ?, ?) RETURNING *"
-    )
-      .bind(name, x, y, description || "", category)
-      .first();
+    let info;
+    if (id) {
+      info = await DB.prepare(
+        "UPDATE rindou_kuchikomi_spots SET name = ?, x = ?, y = ?, description = ?, category = ? WHERE id = ? RETURNING *"
+      )
+        .bind(name, x, y, description || "", category, Number(id))
+        .first();
+    } else {
+      info = await DB.prepare(
+        "INSERT INTO rindou_kuchikomi_spots (name, x, y, description, category) VALUES (?, ?, ?, ?, ?) RETURNING *"
+      )
+        .bind(name, x, y, description || "", category)
+        .first();
+    }
 
     return new Response(JSON.stringify(info), {
       status: 201,

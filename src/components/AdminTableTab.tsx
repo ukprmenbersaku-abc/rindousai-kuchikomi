@@ -28,6 +28,12 @@ export default function AdminTableTab({
   // Navigation / Switch inside admin tab
   const [adminSection, setAdminSection] = useState<'spots' | 'timetable' | 'members'>('spots');
 
+  // Edit states for tracking ongoing updates
+  const [editingSpotId, setEditingSpotId] = useState<number | null>(null);
+  const [editingCategoryId, setEditingCategoryId] = useState<string | null>(null);
+  const [editingTimetableId, setEditingTimetableId] = useState<number | null>(null);
+  const [editingMemberId, setEditingMemberId] = useState<number | null>(null);
+
   // Localized form states for adding spots
   const [tableSpotName, setTableSpotName] = useState('');
   const [tableSpotDesc, setTableSpotDesc] = useState('');
@@ -91,7 +97,7 @@ export default function AdminTableTab({
       return;
     }
     try {
-      triggerNotification('進行プログラムを登録中...');
+      triggerNotification(editingTimetableId ? '進行プログラムを更新中...' : '進行プログラムを登録中...');
       let badgeColorClass = 'bg-indigo-50 border-indigo-150 text-indigo-750';
       if (timetableBadgeColor === 'emerald') badgeColorClass = 'bg-emerald-50 border-emerald-150 text-emerald-750';
       if (timetableBadgeColor === 'amber') badgeColorClass = 'bg-amber-50 border-amber-150 text-amber-750';
@@ -99,6 +105,7 @@ export default function AdminTableTab({
       if (timetableBadgeColor === 'neutral') badgeColorClass = 'bg-neutral-50 border-neutral-200 text-neutral-700';
 
       const eventData = {
+        ...(editingTimetableId ? { id: editingTimetableId } : {}),
         day: Number(timetableDay),
         time: timetableTime.trim(),
         title: timetableTitle.trim(),
@@ -109,13 +116,19 @@ export default function AdminTableTab({
       };
 
       const saved = await api.saveTimetable(eventData);
-      setTimetable(prev => [...prev, saved]);
+      if (editingTimetableId) {
+        setTimetable(prev => prev.map(t => t.id === saved.id ? saved : t));
+        setEditingTimetableId(null);
+        triggerNotification(`進行「${saved.title}」を正常に更新しました。`);
+      } else {
+        setTimetable(prev => [...prev, saved]);
+        triggerNotification(`進行「${saved.title}」を正常に登録しました。`);
+      }
       setTimetableTime('');
       setTimetableTitle('');
       setTimetableLocation('');
       setTimetableDescription('');
       setTimetableBadge('');
-      triggerNotification(`進行「${saved.title}」を正常に登録しました。`);
     } catch (err) {
       console.error(err);
       triggerNotification('プログラムの登録に失敗しました');
@@ -145,8 +158,9 @@ export default function AdminTableTab({
       return;
     }
     try {
-      triggerNotification('特別企画コラムを登録中...');
+      triggerNotification(editingMemberId ? '特別企画コラムを更新中...' : '特別企画コラムを登録中...');
       const memberData = {
+        ...(editingMemberId ? { id: editingMemberId } : {}),
         title: memberTitle.trim(),
         subtitle: memberSubtitle.trim(),
         avatarChar: memberAvatarChar.trim().substr(0, 2),
@@ -155,12 +169,18 @@ export default function AdminTableTab({
       };
 
       const saved = await api.saveMember(memberData);
-      setMembers(prev => [...prev, saved]);
+      if (editingMemberId) {
+        setMembers(prev => prev.map(m => m.id === saved.id ? saved : m));
+        setEditingMemberId(null);
+        triggerNotification(`特別企画「${saved.title}」を正常に更新しました。`);
+      } else {
+        setMembers(prev => [...prev, saved]);
+        triggerNotification(`特別企画「${saved.title}」を正常に登録しました。`);
+      }
       setMemberTitle('');
       setMemberSubtitle('');
       setMemberAvatarChar('');
       setMemberDescription('');
-      triggerNotification(`特別企画「${saved.title}」を正常に登録しました。`);
     } catch (err) {
       console.error(err);
       triggerNotification('特別企画コラムの登録に失敗しました');
@@ -251,10 +271,19 @@ export default function AdminTableTab({
         <div className="space-y-8">
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 w-full">
             {/* Form 1: Add new Spot directly via Table */}
-            <div className="bg-white p-6 rounded-3xl border border-neutral-200/60 shadow-xs col-span-1 lg:col-span-2">
-              <div className="flex items-center gap-2 mb-4 pb-2 border-b border-neutral-100">
-                <MapPin className="w-5 h-5 text-indigo-500" />
-                <h3 className="text-sm font-black text-neutral-800">新規スポットを登録する</h3>
+            <div className={`p-6 rounded-3xl border shadow-xs col-span-1 lg:col-span-2 transition-all duration-300 ${editingSpotId ? 'bg-indigo-50/20 border-indigo-200 ring-4 ring-indigo-500/5' : 'bg-white border-neutral-200/60'}`}>
+              <div className="flex items-center justify-between mb-4 pb-2 border-b border-neutral-100">
+                <div className="flex items-center gap-2">
+                  <MapPin className={`w-5 h-5 ${editingSpotId ? 'text-indigo-600 animate-pulse' : 'text-indigo-500'}`} />
+                  <h3 className="text-sm font-black text-neutral-800">
+                    {editingSpotId ? `スポット情報を編集・更新する` : '新規スポットを登録する'}
+                  </h3>
+                </div>
+                {editingSpotId && (
+                  <span className="text-[10px] bg-indigo-600 text-white font-black px-2.5 py-1 rounded-full animate-bounce">
+                    編集モード
+                  </span>
+                )}
               </div>
               <div className="space-y-4">
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -332,7 +361,23 @@ export default function AdminTableTab({
                   />
                 </div>
 
-                <div className="flex justify-end pt-2">
+                <div className="flex justify-end gap-2 pt-2">
+                  {editingSpotId && (
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setEditingSpotId(null);
+                        setTableSpotName('');
+                        setTableSpotDesc('');
+                        setTableSpotX(50);
+                        setTableSpotY(50);
+                        triggerNotification('編集をキャンセルしました');
+                      }}
+                      className="bg-neutral-100 hover:bg-neutral-200 text-neutral-700 font-extrabold text-[11px] px-4 py-2.5 rounded-xl transition-all"
+                    >
+                      キャンセル
+                    </button>
+                  )}
                   <button
                     type="button"
                     onClick={async () => {
@@ -341,8 +386,9 @@ export default function AdminTableTab({
                         return;
                       }
                       try {
-                        triggerNotification('新しいスポットを登録中...');
+                        triggerNotification(editingSpotId ? 'スポット情報を更新中...' : '新しいスポットを登録中...');
                         const spotData = {
+                          ...(editingSpotId ? { id: editingSpotId } : {}),
                           name: tableSpotName.trim(),
                           x: Math.max(0, Math.min(100, parseFloat(tableSpotX.toFixed(2)))),
                           y: Math.max(0, Math.min(100, parseFloat(tableSpotY.toFixed(2)))),
@@ -352,34 +398,50 @@ export default function AdminTableTab({
 
                         const saved = await api.saveSpot(spotData);
                         if (saved) {
-                          setSpots((prev) => [...prev, saved]);
+                          if (editingSpotId) {
+                            setSpots((prev) => prev.map((s) => s.id === saved.id ? saved : s));
+                            setEditingSpotId(null);
+                            triggerNotification(`スポット「${saved.name}」を更新しました`);
+                          } else {
+                            setSpots((prev) => [...prev, saved]);
+                            triggerNotification(`スポット「${saved.name}」を表形式から正常に追加しました`);
+                          }
                           setTableSpotName('');
                           setTableSpotDesc('');
-                          triggerNotification(`スポット「${saved.name}」を表形式から正常に追加しました`);
+                          setSelectedSpot(saved);
                         }
                       } catch (err) {
                         console.error(err);
-                        triggerNotification('スポットの追加に失敗しました');
+                        triggerNotification('スポットの保存に失敗しました');
                       }
                     }}
                     className="bg-indigo-600 hover:bg-indigo-700 text-white font-extrabold text-[11px] px-6 py-2.5 rounded-xl transition-all shadow-md shadow-indigo-600/10 flex items-center gap-1.5"
                   >
-                    <Plus className="w-3.5 h-3.5" />
-                    <span>新規スポットを表に追加</span>
+                    {editingSpotId ? <CheckSquare className="w-3.5 h-3.5" /> : <Plus className="w-3.5 h-3.5" />}
+                    <span>{editingSpotId ? '変更を保存する' : '新規スポットを表に追加'}</span>
                   </button>
                 </div>
               </div>
             </div>
 
             {/* Form 2: Quick add category right here in Table Admin too */}
-            <div className="bg-slate-900 border border-slate-800 text-white p-6 rounded-3xl col-span-1 shadow-md flex flex-col justify-between">
+            <div className={`text-white p-6 rounded-3xl col-span-1 shadow-md flex flex-col justify-between transition-all duration-300 ${editingCategoryId ? 'bg-indigo-950 border border-indigo-700 ring-4 ring-indigo-500/10' : 'bg-slate-900 border border-slate-800'}`}>
               <div>
-                <div className="flex items-center gap-2 mb-4 pb-2 border-b border-slate-800">
-                  <span className="w-2.5 h-2.5 rounded-full bg-indigo-500 animate-pulse" />
-                  <h3 className="text-sm font-black tracking-tight">新たなカテゴリー登録</h3>
+                <div className="flex items-center justify-between mb-4 pb-2 border-b border-slate-800">
+                  <div className="flex items-center gap-2">
+                    <span className={`w-2.5 h-2.5 rounded-full ${editingCategoryId ? 'bg-indigo-400' : 'bg-indigo-500'} animate-pulse`} />
+                    <h3 className="text-sm font-black tracking-tight">
+                      {editingCategoryId ? 'カテゴリー情報を編集' : '新たなカテゴリー登録'}
+                    </h3>
+                  </div>
+                  {editingCategoryId && (
+                    <span className="text-[10px] bg-indigo-600 text-white font-black px-2 py-0.5 rounded-md animate-bounce">
+                      編集
+                    </span>
+                  )}
                 </div>
                 <p className="text-[10px] text-slate-300 leading-normal mb-4">
-                  教室企画や部活展、生徒向けオリジナル企画など、テーマ色の異なるカテゴリーを追加できます。
+                  {editingCategoryId ? 'カテゴリーの表示名と対応するテーマカラーを調整します。' : '教室企画や部活展、生徒向けオリジナル企画など、テーマ色の異なるカテゴリーを追加できます。'}
                 </p>
 
                 <div className="space-y-4">
@@ -418,31 +480,53 @@ export default function AdminTableTab({
                 </div>
               </div>
 
-              <button
-                type="button"
-                onClick={async () => {
-                  if (!newCategoryLabel.trim()) return;
-                  const cleanId = 'cat_' + Math.random().toString(36).substr(2, 9);
-                  const newCat = {
-                    id: cleanId,
-                    label: newCategoryLabel.trim(),
-                    color: newCategoryColor,
-                  };
-                  try {
-                    triggerNotification('カテゴリーを登録中...');
-                    const saved = await api.saveCategory(newCat);
-                    setCategories(prev => [...prev, saved]);
-                    setNewCategoryLabel('');
-                    triggerNotification(`カテゴリー「${saved.label}」を作成しました`);
-                  } catch (err) {
-                    console.error(err);
-                    triggerNotification('カテゴリー作成に失敗しました');
-                  }
-                }}
-                className="w-full mt-6 bg-indigo-600 hover:bg-indigo-700 text-white font-extrabold text-[10px] transition-colors rounded-lg py-2.5 px-3"
-              >
-                新しいカテゴリーを作成・追加
-              </button>
+              <div className="flex gap-2 mt-6">
+                {editingCategoryId && (
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setEditingCategoryId(null);
+                      setNewCategoryLabel('');
+                      setNewCategoryColor('indigo');
+                      triggerNotification('編集をキャンセルしました');
+                    }}
+                    className="w-1/3 bg-slate-800 hover:bg-slate-705 text-[10px] text-slate-300 font-extrabold rounded-lg py-2.5"
+                  >
+                    取消
+                  </button>
+                )}
+                <button
+                  type="button"
+                  onClick={async () => {
+                    if (!newCategoryLabel.trim()) return;
+                    const cleanId = editingCategoryId || ('cat_' + Math.random().toString(36).substr(2, 9));
+                    const newCat = {
+                      id: cleanId,
+                      label: newCategoryLabel.trim(),
+                      color: newCategoryColor,
+                    };
+                    try {
+                      triggerNotification(editingCategoryId ? 'カテゴリーを更新中...' : 'カテゴリーを登録中...');
+                      const saved = await api.saveCategory(newCat);
+                      if (editingCategoryId) {
+                        setCategories(prev => prev.map(item => item.id === saved.id ? saved : item));
+                        setEditingCategoryId(null);
+                        triggerNotification(`カテゴリー「${saved.label}」を更新しました`);
+                      } else {
+                        setCategories(prev => [...prev, saved]);
+                        triggerNotification(`カテゴリー「${saved.label}」を作成しました`);
+                      }
+                      setNewCategoryLabel('');
+                    } catch (err) {
+                      console.error(err);
+                      triggerNotification('カテゴリー作成に失敗しました');
+                    }
+                  }}
+                  className={`font-black text-[10px] transition-colors rounded-lg py-2.5 px-3 ${editingCategoryId ? 'w-2/3 bg-indigo-500 hover:bg-indigo-600 text-white' : 'w-full bg-indigo-600 hover:bg-indigo-700 text-white'}`}
+                >
+                  {editingCategoryId ? '変更を保存' : 'カテゴリーを作成・追加'}
+                </button>
+              </div>
             </div>
           </div>
 
@@ -495,27 +579,51 @@ export default function AdminTableTab({
                               {spot.x.toFixed(2)}% , {spot.y.toFixed(2)}%
                             </td>
                             <td className="py-3.5 px-4 text-center">
-                              <button
-                                onClick={async () => {
-                                  if (confirm(`スポット「${spot.name}」を完全に削除しますか？`)) {
-                                    try {
-                                      triggerNotification('スポットを削除中...');
-                                      const success = await api.deleteSpot(spot.id);
-                                      if (success) {
-                                        setSpots((prev) => prev.filter((s) => s.id !== spot.id));
-                                        setSelectedSpot(null);
-                                        triggerNotification(`スポット「${spot.name}」を削除しました`);
+                              <div className="flex items-center justify-center gap-1.5">
+                                <button
+                                  onClick={() => {
+                                    setEditingSpotId(spot.id);
+                                    setTableSpotName(spot.name);
+                                    setTableSpotDesc(spot.description || '');
+                                    setTableSpotCat(spot.category);
+                                    setTableSpotX(spot.x);
+                                    setTableSpotY(spot.y);
+                                    triggerNotification(`スポット「${spot.name}」を編集モードで読み込みました`);
+                                    window.scrollTo({ top: 300, behavior: 'smooth' });
+                                  }}
+                                  className="p-1 px-2.5 rounded-lg border border-neutral-200 bg-white hover:border-indigo-150 hover:bg-indigo-50 text-neutral-600 hover:text-indigo-600 transition-colors text-[10px] font-bold"
+                                >
+                                  編集
+                                </button>
+                                <button
+                                  onClick={async () => {
+                                    if (confirm(`スポット「${spot.name}」を完全に削除しますか？`)) {
+                                      try {
+                                        triggerNotification('スポットを削除中...');
+                                        const success = await api.deleteSpot(spot.id);
+                                        if (success) {
+                                          setSpots((prev) => prev.filter((s) => s.id !== spot.id));
+                                          setSelectedSpot(null);
+                                          if (editingSpotId === spot.id) {
+                                            setEditingSpotId(null);
+                                            setTableSpotName('');
+                                            setTableSpotDesc('');
+                                            setTableSpotX(50);
+                                            setTableSpotY(50);
+                                          }
+                                          triggerNotification(`スポット「${spot.name}」を削除しました`);
+                                        }
+                                      } catch (err) {
+                                        console.error(err);
+                                        triggerNotification('送信中にエラーが発生しました');
                                       }
-                                    } catch (err) {
-                                      console.error(err);
-                                      triggerNotification('送信中にエラーが発生しました');
                                     }
-                                  }
-                                }}
-                                className="p-1 px-2.5 rounded-lg border border-neutral-100 hover:border-rose-100 hover:bg-rose-50 text-neutral-400 hover:text-rose-600 transition-colors text-[10px] font-bold"
-                              >
-                                削除
-                              </button>
+                                  }}
+                                  className="p-1 px-2.5 rounded-lg border border-neutral-100 hover:border-rose-100 hover:bg-rose-50 text-neutral-400 hover:text-rose-600 transition-colors text-[10px] font-bold"
+                                >
+                                  削除
+                                </button>
+                              </div>
                             </td>
                           </tr>
                         );
@@ -535,7 +643,7 @@ export default function AdminTableTab({
                     <span>カテゴリー一覧 ({categories.length}個)</span>
                   </h3>
                   <p className="text-[10px] text-neutral-400 mt-1">
-                    システム上のカテゴリーを削除できます。
+                    システム上のカテゴリーを編集・削除できます。
                   </p>
                 </div>
               </div>
@@ -571,25 +679,44 @@ export default function AdminTableTab({
                         </td>
                         <td className="py-3.5 px-4 uppercase font-mono tracking-wider font-bold text-[10px] text-neutral-500 text-left">{c.color}</td>
                         <td className="py-3.5 px-4 text-center">
-                          <button
-                            onClick={async () => {
-                              if (confirm(`カテゴリー「${c.label}」を完全に削除しますか？`)) {
-                                try {
-                                  triggerNotification('カテゴリーを削除中...');
-                                  const success = await api.deleteCategory(c.id);
-                                  if (success) {
-                                    setCategories(prev => prev.filter(item => item.id !== c.id));
-                                    triggerNotification('カテゴリーを消去しました');
+                          <div className="flex items-center justify-center gap-1.5">
+                            <button
+                              onClick={() => {
+                                setEditingCategoryId(c.id);
+                                setNewCategoryLabel(c.label);
+                                setNewCategoryColor(c.color);
+                                triggerNotification(`カテゴリー「${c.label}」を編集モードで読み込みました`);
+                                window.scrollTo({ top: 300, behavior: 'smooth' });
+                              }}
+                              className="p-1 px-2.5 rounded-lg border border-neutral-200 bg-white hover:border-indigo-150 hover:bg-indigo-50 text-neutral-600 hover:text-indigo-600 transition-colors text-[10px] font-bold"
+                            >
+                              編集
+                            </button>
+                            <button
+                              onClick={async () => {
+                                if (confirm(`カテゴリー「${c.label}」を完全に削除しますか？`)) {
+                                  try {
+                                    triggerNotification('カテゴリーを削除中...');
+                                    const success = await api.deleteCategory(c.id);
+                                    if (success) {
+                                      setCategories(prev => prev.filter(item => item.id !== c.id));
+                                      if (editingCategoryId === c.id) {
+                                        setEditingCategoryId(null);
+                                        setNewCategoryLabel('');
+                                        setNewCategoryColor('indigo');
+                                      }
+                                      triggerNotification('カテゴリーを消去しました');
+                                    }
+                                  } catch (err) {
+                                    console.error(err);
                                   }
-                                } catch (err) {
-                                  console.error(err);
                                 }
-                              }
-                            }}
-                            className="p-1 px-2.5 rounded-lg border border-neutral-100 hover:border-rose-100 hover:bg-rose-50 text-neutral-400 hover:text-rose-600 transition-colors text-[10px] font-bold"
-                          >
-                            削除
-                          </button>
+                              }}
+                              className="p-1 px-2.5 rounded-lg border border-neutral-100 hover:border-rose-100 hover:bg-rose-50 text-neutral-400 hover:text-rose-600 transition-colors text-[10px] font-bold"
+                            >
+                              削除
+                            </button>
+                          </div>
                         </td>
                       </tr>
                     ))}
@@ -605,10 +732,19 @@ export default function AdminTableTab({
       {adminSection === 'timetable' && (
         <div className="space-y-8">
           {/* Timetable Form */}
-          <div className="bg-white p-6 rounded-3xl border border-neutral-200/60 shadow-xs">
-            <div className="flex items-center gap-2 mb-4 pb-2 border-b border-neutral-100">
-              <Calendar className="w-5 h-5 text-indigo-500" />
-              <h3 className="text-sm font-black text-neutral-800">進行プログラム・タイムテーブルの追加</h3>
+          <div className={`p-6 rounded-3xl border shadow-xs transition-all duration-300 ${editingTimetableId ? 'bg-indigo-50/20 border-indigo-200 ring-4 ring-indigo-500/5' : 'bg-white border-neutral-200/60'}`}>
+            <div className="flex items-center justify-between mb-4 pb-2 border-b border-neutral-100">
+              <div className="flex items-center gap-2">
+                <Calendar className={`w-5 h-5 ${editingTimetableId ? 'text-indigo-600 animate-pulse' : 'text-indigo-500'}`} />
+                <h3 className="text-sm font-black text-neutral-800">
+                  {editingTimetableId ? '進行プログラム・タイムテーブルの編集' : '進行プログラム・タイムテーブルの追加'}
+                </h3>
+              </div>
+              {editingTimetableId && (
+                <span className="text-[10px] bg-indigo-600 text-white font-black px-2.5 py-1 rounded-full animate-bounce">
+                  編集モード
+                </span>
+              )}
             </div>
 
             <div className="space-y-4">
@@ -708,14 +844,31 @@ export default function AdminTableTab({
                 />
               </div>
 
-              <div className="flex justify-end pt-2">
+              <div className="flex justify-end gap-2 pt-2">
+                {editingTimetableId && (
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setEditingTimetableId(null);
+                      setTimetableTime('');
+                      setTimetableTitle('');
+                      setTimetableLocation('');
+                      setTimetableDescription('');
+                      setTimetableBadge('');
+                      triggerNotification('編集をキャンセルしました');
+                    }}
+                    className="bg-neutral-100 hover:bg-neutral-200 text-neutral-700 font-extrabold text-[11px] px-4 py-2.5 rounded-xl transition-all"
+                  >
+                    キャンセル
+                  </button>
+                )}
                 <button
                   type="button"
                   onClick={handleAddTimetable}
                   className="bg-indigo-600 hover:bg-indigo-700 text-white font-extrabold text-[11px] px-6 py-2.5 rounded-xl transition-all shadow-md flex items-center gap-1.5"
                 >
-                  <Plus className="w-3.5 h-3.5" />
-                  <span>プログラムを登録してタイムラインに反映</span>
+                  {editingTimetableId ? <CheckSquare className="w-3.5 h-3.5" /> : <Plus className="w-3.5 h-3.5" />}
+                  <span>{editingTimetableId ? '変更を保存してタイムラインに反映' : 'プログラムを登録してタイムラインに反映'}</span>
                 </button>
               </div>
             </div>
@@ -748,7 +901,7 @@ export default function AdminTableTab({
                       <th className="py-3 px-4">催し・プログラム名 / 紹介</th>
                       <th className="py-3 px-4">開催場所</th>
                       <th className="py-3 px-4">タグ / バッジ</th>
-                      <th className="py-3 px-4 w-24 text-center">操作</th>
+                      <th className="py-3 px-4 w-28 text-center">操作</th>
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-neutral-100 text-xs">
@@ -771,12 +924,40 @@ export default function AdminTableTab({
                           )}
                         </td>
                         <td className="py-3.5 px-4 text-center">
-                          <button
-                            onClick={() => handleDeleteTimetable(t.id, t.title)}
-                            className="p-1 px-2.5 rounded-lg border border-neutral-100 hover:border-rose-100 hover:bg-rose-50 text-neutral-400 hover:text-rose-600 transition-colors text-[10px] font-bold"
-                          >
-                            削除
-                          </button>
+                          <div className="flex items-center justify-center gap-1.5">
+                            <button
+                              onClick={() => {
+                                setEditingTimetableId(t.id);
+                                setTimetableDay(Number(t.day));
+                                setTimetableTime(t.time);
+                                setTimetableTitle(t.title);
+                                setTimetableLocation(t.location);
+                                setTimetableDescription(t.description || '');
+                                setTimetableBadge(t.badge || '');
+                                
+                                // Parse badgeColor prefix
+                                let colorPreset = 'indigo';
+                                if (t.badgeColor) {
+                                  if (t.badgeColor.includes('emerald')) colorPreset = 'emerald';
+                                  else if (t.badgeColor.includes('amber')) colorPreset = 'amber';
+                                  else if (t.badgeColor.includes('rose')) colorPreset = 'rose';
+                                  else if (t.badgeColor.includes('neutral')) colorPreset = 'neutral';
+                                }
+                                setTimetableBadgeColor(colorPreset);
+                                triggerNotification(`プログラム「${t.title}」を編集モードで読み込みました`);
+                                window.scrollTo({ top: 300, behavior: 'smooth' });
+                              }}
+                              className="p-1 px-2.5 rounded-lg border border-neutral-200 bg-white hover:border-indigo-150 hover:bg-indigo-50 text-neutral-600 hover:text-indigo-600 transition-colors text-[10px] font-bold"
+                            >
+                              編集
+                            </button>
+                            <button
+                              onClick={() => handleDeleteTimetable(t.id, t.title)}
+                              className="p-1 px-2.5 rounded-lg border border-neutral-100 hover:border-rose-100 hover:bg-rose-50 text-neutral-400 hover:text-rose-600 transition-colors text-[10px] font-bold"
+                            >
+                              削除
+                            </button>
+                          </div>
                         </td>
                       </tr>
                     ))}
@@ -792,10 +973,19 @@ export default function AdminTableTab({
       {adminSection === 'members' && (
         <div className="space-y-8">
           {/* Members/Committees Form */}
-          <div className="bg-white p-6 rounded-3xl border border-neutral-200/60 shadow-xs">
-            <div className="flex items-center gap-2 mb-4 pb-2 border-b border-neutral-100">
-              <Users className="w-5 h-5 text-indigo-500" />
-              <h3 className="text-sm font-black text-neutral-800">特別企画・運営員・紹介カードの追加</h3>
+          <div className={`p-6 rounded-3xl border shadow-xs transition-all duration-300 ${editingMemberId ? 'bg-indigo-50/20 border-indigo-200 ring-4 ring-indigo-500/5' : 'bg-white border-neutral-200/60'}`}>
+            <div className="flex items-center justify-between mb-4 pb-2 border-b border-neutral-100">
+              <div className="flex items-center gap-2">
+                <Users className={`w-5 h-5 ${editingMemberId ? 'text-indigo-600 animate-pulse' : 'text-indigo-500'}`} />
+                <h3 className="text-sm font-black text-neutral-800">
+                  {editingMemberId ? '特別企画・運営員・紹介カードの編集' : '特別企画・運営員・紹介カードの追加'}
+                </h3>
+              </div>
+              {editingMemberId && (
+                <span className="text-[10px] bg-indigo-600 text-white font-black px-2.5 py-1 rounded-full animate-bounce">
+                  編集モード
+                </span>
+              )}
             </div>
 
             <div className="space-y-4">
@@ -874,14 +1064,30 @@ export default function AdminTableTab({
                 />
               </div>
 
-              <div className="flex justify-end pt-2">
+              <div className="flex justify-end gap-2 pt-2">
+                {editingMemberId && (
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setEditingMemberId(null);
+                      setMemberTitle('');
+                      setMemberSubtitle('');
+                      setMemberAvatarChar('');
+                      setMemberDescription('');
+                      triggerNotification('編集をキャンセルしました');
+                    }}
+                    className="bg-neutral-100 hover:bg-neutral-200 text-neutral-700 font-extrabold text-[11px] px-4 py-2.5 rounded-xl transition-all"
+                  >
+                    キャンセル
+                  </button>
+                )}
                 <button
                   type="button"
                   onClick={handleAddMember}
                   className="bg-indigo-600 hover:bg-indigo-700 text-white font-extrabold text-[11px] px-6 py-2.5 rounded-xl transition-all shadow-md flex items-center gap-1.5"
                 >
-                  <Plus className="w-3.5 h-3.5" />
-                  <span>紹介カードを登録して追加</span>
+                  {editingMemberId ? <CheckSquare className="w-3.5 h-3.5" /> : <Plus className="w-3.5 h-3.5" />}
+                  <span>{editingMemberId ? '変更を保存してコラムを更新' : '紹介カードを登録して追加'}</span>
                 </button>
               </div>
             </div>
@@ -914,7 +1120,7 @@ export default function AdminTableTab({
                       <th className="py-3 px-4">役割・副題</th>
                       <th className="py-3 px-4">アピール・紹介文</th>
                       <th className="py-3 px-4">カラー</th>
-                      <th className="py-3 px-4 w-24 text-center">操作</th>
+                      <th className="py-3 px-4 w-28 text-center">操作</th>
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-neutral-100 text-xs">
@@ -932,12 +1138,29 @@ export default function AdminTableTab({
                           {m.colorTheme || (m as any).color_theme || 'indigo'}
                         </td>
                         <td className="py-3.5 px-4 text-center">
-                          <button
-                            onClick={() => handleDeleteMember(m.id, m.title)}
-                            className="p-1 px-2.5 rounded-lg border border-neutral-100 hover:border-rose-100 hover:bg-rose-50 text-neutral-400 hover:text-rose-600 transition-colors text-[10px] font-bold"
-                          >
-                            削除
-                          </button>
+                          <div className="flex items-center justify-center gap-1.5">
+                            <button
+                              onClick={() => {
+                                setEditingMemberId(m.id);
+                                setMemberTitle(m.title);
+                                setMemberSubtitle(m.subtitle);
+                                setMemberAvatarChar(m.avatarChar || (m as any).avatar_char || '');
+                                setMemberColorTheme(m.colorTheme || (m as any).color_theme || 'indigo');
+                                setMemberDescription(m.description);
+                                triggerNotification(`特別企画「${m.title}」を編集モードで読み込みました`);
+                                window.scrollTo({ top: 300, behavior: 'smooth' });
+                              }}
+                              className="p-1 px-2.5 rounded-lg border border-neutral-200 bg-white hover:border-indigo-150 hover:bg-indigo-50 text-neutral-600 hover:text-indigo-600 transition-colors text-[10px] font-bold"
+                            >
+                              編集
+                            </button>
+                            <button
+                              onClick={() => handleDeleteMember(m.id, m.title)}
+                              className="p-1 px-2.5 rounded-lg border border-neutral-100 hover:border-rose-100 hover:bg-rose-50 text-neutral-400 hover:text-rose-600 transition-colors text-[10px] font-bold"
+                            >
+                              削除
+                            </button>
+                          </div>
                         </td>
                       </tr>
                     ))}

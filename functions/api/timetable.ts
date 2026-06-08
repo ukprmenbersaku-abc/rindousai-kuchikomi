@@ -35,7 +35,7 @@ export const onRequestPost: PagesFunction<Env> = async (context) => {
   try {
     const { DB } = context.env;
     const data: any = await context.request.json();
-    const { day, time, title, location, description, badge, badgeColor } = data;
+    const { id, day, time, title, location, description, badge, badgeColor } = data;
 
     if (day === undefined || !time || !title || !location) {
       return new Response(JSON.stringify({ error: "Missing required fields" }), {
@@ -44,11 +44,20 @@ export const onRequestPost: PagesFunction<Env> = async (context) => {
       });
     }
 
-    const info = await DB.prepare(
-      "INSERT INTO rindou_timetable (day, time, title, location, description, badge, badge_color) VALUES (?, ?, ?, ?, ?, ?, ?) RETURNING *"
-    )
-      .bind(Number(day), time, title, location, description || "", badge || "", badgeColor || "")
-      .first();
+    let info;
+    if (id) {
+      info = await DB.prepare(
+        "UPDATE rindou_timetable SET day = ?, time = ?, title = ?, location = ?, description = ?, badge = ?, badge_color = ? WHERE id = ? RETURNING *"
+      )
+        .bind(Number(day), time, title, location, description || "", badge || "", badgeColor || "", Number(id))
+        .first();
+    } else {
+      info = await DB.prepare(
+        "INSERT INTO rindou_timetable (day, time, title, location, description, badge, badge_color) VALUES (?, ?, ?, ?, ?, ?, ?) RETURNING *"
+      )
+        .bind(Number(day), time, title, location, description || "", badge || "", badgeColor || "")
+        .first();
+    }
 
     return new Response(JSON.stringify(info), {
       status: 201,

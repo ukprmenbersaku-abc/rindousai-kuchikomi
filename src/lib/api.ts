@@ -217,9 +217,9 @@ export const api = {
   },
 
   /**
-   * Save a new spot (admin)
+   * Save a new spot or edit an existing spot (admin)
    */
-  async saveSpot(spot: Omit<Spot, 'id'>): Promise<Spot> {
+  async saveSpot(spot: Omit<Spot, 'id'> & { id?: number }): Promise<Spot> {
     try {
       const response = await fetch('/api/spots', {
         method: 'POST',
@@ -233,12 +233,18 @@ export const api = {
       console.warn('API error, falling back to local storage:', error);
       hasFallbackTriggered = true;
       const spots = getLocalStorageSpots();
-      const newSpot: Spot = {
-        ...spot,
-        id: spots.length > 0 ? Math.max(...spots.map(s => s.id)) + 1 : 1,
-      };
-      setLocalStorageSpots([...spots, newSpot]);
-      return newSpot;
+      if (spot.id) {
+        const updated = spots.map(s => s.id === spot.id ? { ...s, ...spot } as Spot : s);
+        setLocalStorageSpots(updated);
+        return spot as Spot;
+      } else {
+        const newSpot: Spot = {
+          ...spot,
+          id: spots.length > 0 ? Math.max(...spots.map(s => s.id)) + 1 : 1,
+        } as Spot;
+        setLocalStorageSpots([...spots, newSpot]);
+        return newSpot;
+      }
     }
   },
 
@@ -409,9 +415,9 @@ export const api = {
   },
 
   /**
-   * Save a timetable event
+   * Save a timetable event (create or edit)
    */
-  async saveTimetable(event: Omit<TimetableEvent, 'id'>): Promise<TimetableEvent> {
+  async saveTimetable(event: Omit<TimetableEvent, 'id'> & { id?: number }): Promise<TimetableEvent> {
     try {
       const response = await fetch('/api/timetable', {
         method: 'POST',
@@ -425,12 +431,18 @@ export const api = {
       console.warn('API error, falling back to local storage timetable save:', error);
       hasFallbackTriggered = true;
       const timetable = getLocalStorageTimetable();
-      const newEvent: TimetableEvent = {
-        ...event,
-        id: timetable.length > 0 ? Math.max(...timetable.map(t => t.id)) + 1 : 1,
-      };
-      setLocalStorageTimetable([...timetable, newEvent]);
-      return newEvent;
+      if (event.id) {
+        const updated = timetable.map(t => t.id === event.id ? { ...t, ...event } as TimetableEvent : t);
+        setLocalStorageTimetable(updated);
+        return event as TimetableEvent;
+      } else {
+        const newEvent: TimetableEvent = {
+          ...event,
+          id: timetable.length > 0 ? Math.max(...timetable.map(t => t.id)) + 1 : 1,
+        } as TimetableEvent;
+        setLocalStorageTimetable([...timetable, newEvent]);
+        return newEvent;
+      }
     }
   },
 
@@ -471,9 +483,9 @@ export const api = {
   },
 
   /**
-   * Save a committee member/special project
+   * Save a committee member/special project (create or edit)
    */
-  async saveMember(member: Omit<CommitteeMember, 'id'>): Promise<CommitteeMember> {
+  async saveMember(member: Omit<CommitteeMember, 'id'> & { id?: number }): Promise<CommitteeMember> {
     try {
       const response = await fetch('/api/members', {
         method: 'POST',
@@ -487,12 +499,18 @@ export const api = {
       console.warn('API error, falling back to local storage member save:', error);
       hasFallbackTriggered = true;
       const members = getLocalStorageMembers();
-      const newMember: CommitteeMember = {
-        ...member,
-        id: members.length > 0 ? Math.max(...members.map(m => m.id)) + 1 : 1,
-      };
-      setLocalStorageMembers([...members, newMember]);
-      return newMember;
+      if (member.id) {
+        const updated = members.map(m => m.id === member.id ? { ...m, ...member } as CommitteeMember : m);
+        setLocalStorageMembers(updated);
+        return member as CommitteeMember;
+      } else {
+        const newMember: CommitteeMember = {
+          ...member,
+          id: members.length > 0 ? Math.max(...members.map(m => m.id)) + 1 : 1,
+        } as CommitteeMember;
+        setLocalStorageMembers([...members, newMember]);
+        return newMember;
+      }
     }
   },
 

@@ -35,7 +35,7 @@ export const onRequestPost: PagesFunction<Env> = async (context) => {
   try {
     const { DB } = context.env;
     const data: any = await context.request.json();
-    const { title, subtitle, avatarChar, colorTheme, description } = data;
+    const { id, title, subtitle, avatarChar, colorTheme, description } = data;
 
     if (!title || !subtitle || !avatarChar || !colorTheme || !description) {
       return new Response(JSON.stringify({ error: "Missing required fields" }), {
@@ -44,11 +44,20 @@ export const onRequestPost: PagesFunction<Env> = async (context) => {
       });
     }
 
-    const info = await DB.prepare(
-      "INSERT INTO rindou_members (title, subtitle, avatar_char, color_theme, description) VALUES (?, ?, ?, ?, ?) RETURNING *"
-    )
-      .bind(title, subtitle, avatarChar, colorTheme, description)
-      .first();
+    let info;
+    if (id) {
+      info = await DB.prepare(
+        "UPDATE rindou_members SET title = ?, subtitle = ?, avatar_char = ?, color_theme = ?, description = ? WHERE id = ? RETURNING *"
+      )
+        .bind(title, subtitle, avatarChar, colorTheme, description, Number(id))
+        .first();
+    } else {
+      info = await DB.prepare(
+        "INSERT INTO rindou_members (title, subtitle, avatar_char, color_theme, description) VALUES (?, ?, ?, ?, ?) RETURNING *"
+      )
+        .bind(title, subtitle, avatarChar, colorTheme, description)
+        .first();
+    }
 
     return new Response(JSON.stringify(info), {
       status: 201,
