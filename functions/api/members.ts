@@ -19,31 +19,7 @@ interface Env {
 export const onRequestGet: PagesFunction<Env> = async (context) => {
   try {
     const { DB } = context.env;
-    
-    // Auto-create table if not exists for flawless zero-config database upgrades
-    await DB.prepare(`
-      CREATE TABLE IF NOT EXISTS rindou_kuchikomi_categories (
-        id TEXT PRIMARY KEY,
-        label TEXT NOT NULL,
-        color TEXT NOT NULL
-      )
-    `).bind().run();
-
-    let { results } = await DB.prepare("SELECT * FROM rindou_kuchikomi_categories").all();
-    if (results.length === 0) {
-      const defaults = [
-        { id: 'stage', label: 'ステージ発表', color: 'indigo' },
-        { id: 'exhibition', label: '展示企画', color: 'emerald' },
-        { id: 'food_shop', label: '模擬店・バザー', color: 'amber' },
-        { id: 'event', label: '特別催し', color: 'rose' },
-      ];
-      for (const cat of defaults) {
-        await DB.prepare("INSERT INTO rindou_kuchikomi_categories (id, label, color) VALUES (?, ?, ?)")
-          .bind(cat.id, cat.label, cat.color)
-          .run();
-      }
-      results = defaults;
-    }
+    const { results } = await DB.prepare("SELECT * FROM rindou_members ORDER BY id ASC").all();
     return new Response(JSON.stringify(results), {
       headers: { "Content-Type": "application/json" },
     });
@@ -59,31 +35,22 @@ export const onRequestPost: PagesFunction<Env> = async (context) => {
   try {
     const { DB } = context.env;
     const data: any = await context.request.json();
-    const { id, label, color } = data;
+    const { title, subtitle, avatarChar, colorTheme, description } = data;
 
-    if (!id || !label || !color) {
+    if (!title || !subtitle || !avatarChar || !colorTheme || !description) {
       return new Response(JSON.stringify({ error: "Missing required fields" }), {
         status: 400,
         headers: { "Content-Type": "application/json" },
       });
     }
 
-    // Auto-create table if not exists
-    await DB.prepare(`
-      CREATE TABLE IF NOT EXISTS rindou_kuchikomi_categories (
-        id TEXT PRIMARY KEY,
-        label TEXT NOT NULL,
-        color TEXT NOT NULL
-      )
-    `).bind().run();
-
-    await DB.prepare(
-      "INSERT INTO rindou_kuchikomi_categories (id, label, color) VALUES (?, ?, ?) ON CONFLICT(id) DO UPDATE SET label=excluded.label, color=excluded.color"
+    const info = await DB.prepare(
+      "INSERT INTO rindou_members (title, subtitle, avatar_char, color_theme, description) VALUES (?, ?, ?, ?, ?) RETURNING *"
     )
-      .bind(id, label, color)
-      .run();
+      .bind(title, subtitle, avatarChar, colorTheme, description)
+      .first();
 
-    return new Response(JSON.stringify({ success: true, category: { id, label, color } }), {
+    return new Response(JSON.stringify(info), {
       status: 201,
       headers: { "Content-Type": "application/json" },
     });
@@ -102,22 +69,13 @@ export const onRequestDelete: PagesFunction<Env> = async (context) => {
     const id = url.searchParams.get("id");
 
     if (!id) {
-      return new Response(JSON.stringify({ error: "Missing category id" }), {
+      return new Response(JSON.stringify({ error: "Missing member id" }), {
         status: 400,
         headers: { "Content-Type": "application/json" },
       });
     }
 
-    // Auto-create table if not exists
-    await DB.prepare(`
-      CREATE TABLE IF NOT EXISTS rindou_kuchikomi_categories (
-        id TEXT PRIMARY KEY,
-        label TEXT NOT NULL,
-        color TEXT NOT NULL
-      )
-    `).bind().run();
-
-    await DB.prepare("DELETE FROM rindou_kuchikomi_categories WHERE id = ?").bind(id).run();
+    await DB.prepare("DELETE FROM rindou_members WHERE id = ?").bind(id).run();
 
     return new Response(JSON.stringify({ success: true }), {
       headers: { "Content-Type": "application/json" },

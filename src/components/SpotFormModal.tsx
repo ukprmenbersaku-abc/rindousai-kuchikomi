@@ -76,7 +76,7 @@ export default function SpotFormModal({ x, y, onClose, onSave, categories }: Spo
               <label className="block text-[10px] font-bold text-neutral-400 mb-1">X 座標 (0〜100%)</label>
               <input
                 type="number"
-                step="0.1"
+                step="0.01"
                 min="0"
                 max="100"
                 required
@@ -89,7 +89,7 @@ export default function SpotFormModal({ x, y, onClose, onSave, categories }: Spo
               <label className="block text-[10px] font-bold text-neutral-400 mb-1">Y 座標 (0〜100%)</label>
               <input
                 type="number"
-                step="0.1"
+                step="0.01"
                 min="0"
                 max="100"
                 required

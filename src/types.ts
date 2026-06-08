@@ -34,3 +34,24 @@ export interface D1Database {
   // representation of CF D1 database binding
   prepare: (query: string) => any;
 }
+
+export interface TimetableEvent {
+  id: number;
+  day: number;
+  time: string;
+  title: string;
+  location: string;
+  description: string;
+  badge: string;
+  badgeColor: string;
+}
+
+export interface CommitteeMember {
+  id: number;
+  title: string;
+  subtitle: string;
+  avatarChar: string;
+  colorTheme: string;
+  description: string;
+}
+

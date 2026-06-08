@@ -33,7 +33,21 @@ export const onRequestPost: PagesFunction<Env> = async (context) => {
       // Ignored if table doesn't exist yet
     }
 
-    return new Response(JSON.stringify({ success: true, message: "Database reviews, spots, and categories cleared completely." }), {
+    // 4. Delete all timetable events
+    try {
+      await DB.prepare("DELETE FROM rindou_timetable").bind().run();
+    } catch (_) {
+      // Ignored if table doesn't exist yet
+    }
+
+    // 5. Delete all members/committees
+    try {
+      await DB.prepare("DELETE FROM rindou_members").bind().run();
+    } catch (_) {
+      // Ignored if table doesn't exist yet
+    }
+
+    return new Response(JSON.stringify({ success: true, message: "Database completely cleared." }), {
       headers: { "Content-Type": "application/json" },
     });
   } catch (error: any) {
