@@ -5,6 +5,26 @@
   --font-sans: 'Inter', system-ui, -apple-system, sans-serif;
   --font-display: 'Space Grotesk', system-ui, -apple-system, sans-serif;
   --font-mono: 'JetBrains Mono', monospace;
+
+  --color-rindou-50: #f5f3ff;
+  --color-rindou-100: #ede9fe;
+  --color-rindou-200: #ddd6fe;
+  --color-rindou-300: #c4b5fd;
+  --color-rindou-400: #a78bfa;
+  --color-rindou-500: #8b5cf6;
+  --color-rindou-600: #7c3aed;
+  --color-rindou-700: #6d28d9;
+  --color-rindou-800: #5b21b6;
+  --color-rindou-900: #4c1d95;
+  --color-rindou-950: #2e1065;
+}
+
+@utility scrollbar-none {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+  &::-webkit-scrollbar {
+    display: none;
+  }
 }
 
 /* Premium Animations */

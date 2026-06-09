@@ -496,24 +496,21 @@ export default function MapContainer({
       </div>
 
       {/* Floating Categories legend - Top Right Overlay */}
-      <div className="absolute top-4 right-4 z-20 bg-white/90 backdrop-blur-md shadow-md border border-neutral-100/50 p-2.5 rounded-2xl flex flex-col gap-1.5 text-[9px] font-bold text-neutral-600 pointer-events-auto">
+      <div className="absolute top-4 right-4 z-20 bg-white/95 backdrop-blur-md shadow-md border border-neutral-100/50 p-2.5 rounded-2xl flex flex-col gap-1.5 text-[9px] font-bold text-neutral-600 pointer-events-auto max-w-[150px] max-h-[160px] overflow-y-auto scrollbar-none">
         <span className="text-[8px] uppercase tracking-wider text-neutral-400 border-b pb-1">カテゴリー</span>
-        <div className="flex items-center gap-1.5">
-          <span className="w-2 h-2 rounded-full bg-indigo-500" />
-          <span>ステージ発表</span>
-        </div>
-        <div className="flex items-center gap-1.5 flex-nowrap">
-          <span className="w-2 h-2 rounded-full bg-emerald-500" />
-          <span>展示企画</span>
-        </div>
-        <div className="flex items-center gap-1.5">
-          <span className="w-2 h-2 rounded-full bg-amber-500" />
-          <span>模擬店・おやき</span>
-        </div>
-        <div className="flex items-center gap-1.5">
-          <span className="w-2 h-2 rounded-full bg-rose-500" />
-          <span>特別催し物</span>
-        </div>
+        {categories && categories.length > 0 ? (
+          categories.map((cat) => {
+            const colors = getCategoryColor(cat.id);
+            return (
+              <div key={cat.id} className="flex items-center gap-1.5 flex-nowrap shrink-0">
+                <span className={`w-2 h-2 rounded-full shrink-0 ${colors.bg}`} />
+                <span className="truncate" title={cat.label}>{cat.label}</span>
+              </div>
+            );
+          })
+        ) : (
+          <div className="text-[8px] text-neutral-400 font-medium">登録なし</div>
+        )}
       </div>
 
       {/* Main viewport containing the exact-bounded image with no drift */}
