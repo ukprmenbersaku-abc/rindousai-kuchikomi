@@ -7,6 +7,7 @@ import React, { useState, useEffect } from 'react';
 import { Spot, Review } from '../types';
 import { api } from '../lib/api';
 import { X, Star, Send, Trash2, Heart, MessageSquare, AlertCircle } from 'lucide-react';
+import { motion, AnimatePresence } from 'motion/react';
 
 interface ReviewModalProps {
   spot: Spot;
@@ -91,8 +92,14 @@ export default function ReviewModal({ spot, onClose, isAdmin, onDeleteSpot }: Re
     : '評価はまだありません';
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-neutral-900/40 backdrop-blur-sm p-4 overflow-y-auto">
-      <div className="w-full max-w-2xl bg-white rounded-[32px] border border-neutral-100 shadow-[0_24px_50px_rgba(0,0,0,0.12)] max-h-[90vh] flex flex-col relative animate-scale-up">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-neutral-900/40 backdrop-blur-sm p-4 overflow-y-auto w-full h-full">
+      <motion.div 
+        initial={{ opacity: 0, scale: 0.95, y: 15 }}
+        animate={{ opacity: 1, scale: 1, y: 0 }}
+        exit={{ opacity: 0, scale: 0.95, y: 15 }}
+        transition={{ type: 'spring', stiffness: 350, damping: 28 }}
+        className="w-full max-w-2xl bg-white rounded-[32px] border border-neutral-100 shadow-[0_24px_50px_rgba(0,0,0,0.12)] max-h-[90vh] flex flex-col relative"
+      >
         
         {/* Close Button */}
         <button
@@ -313,7 +320,7 @@ export default function ReviewModal({ spot, onClose, isAdmin, onDeleteSpot }: Re
           </form>
         </div>
 
-      </div>
+      </motion.div>
     </div>
   );
 }

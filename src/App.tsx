@@ -17,6 +17,7 @@ import CreditsTab from './components/CreditsTab';
 import SettingsModal from './components/SettingsModal';
 import { useMapApp } from './hooks/useMapApp';
 import { Sparkles, Key, ChevronRight } from 'lucide-react';
+import { motion, AnimatePresence } from 'motion/react';
 
 export default function App() {
   const {
@@ -89,95 +90,152 @@ export default function App() {
       />
 
       {/* Floated system notifications */}
-      {showNotification && (
-        <div className="fixed bottom-6 right-6 z-50 bg-neutral-900 text-neutral-100 border border-neutral-800 text-xs font-semibold px-5 py-3 rounded-2xl shadow-xl flex items-center gap-2 animate-slide-up" id="app-notification">
-          <Sparkles className="w-4 h-4 text-indigo-400" />
-          <span>{showNotification}</span>
-        </div>
-      )}
+      <AnimatePresence>
+        {showNotification && (
+          <motion.div
+            initial={{ opacity: 0, y: 24, scale: 0.95 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={{ opacity: 0, y: 15, scale: 0.95 }}
+            transition={{ type: 'spring', stiffness: 350, damping: 25 }}
+            className="fixed bottom-6 right-6 z-50 bg-neutral-900/95 backdrop-blur border border-neutral-800 text-xs font-semibold px-5 py-3 rounded-2xl shadow-xl flex items-center gap-2"
+            id="app-notification"
+          >
+            <Sparkles className="w-4 h-4 text-indigo-400" />
+            <span>{showNotification}</span>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       {/* Interactive Main Body Content */}
-      <main className="flex-grow">
-        
-        {/* Map page loaded as a standalone screen layout */}
-        {activeTab === 'home' && (
-          <MapPage
-            isMobile={isMobile}
-            isMobileDrawerExpanded={isMobileDrawerExpanded}
-            setIsMobileDrawerExpanded={setIsMobileDrawerExpanded}
-            selectedSpot={selectedSpot}
-            setSelectedSpot={setSelectedSpot}
-            spots={spots}
-            setSpots={setSpots}
-            categories={categories}
-            setCategories={setCategories}
-            isAdmin={isAdmin}
-            triggerNotification={triggerNotification}
-            loadSpots={loadSpots}
-            searchQuery={searchQuery}
-            setSearchQuery={setSearchQuery}
-            selectedCategory={selectedCategory}
-            setSelectedCategory={setSelectedCategory}
-            setActiveTab={setActiveTab}
-            getCategoryColor={getCategoryColor}
-            searchedSpots={searchedSpots}
-            averageRating={averageRating}
-            spotReviews={spotReviews}
-            isLoadingReviews={isLoadingReviews}
-            handleAddReview={handleAddReview}
-            newRating={newRating}
-            setNewRating={setNewRating}
-            newComment={newComment}
-            setNewComment={setNewComment}
-            newAuthor={newAuthor}
-            setNewAuthor={setNewAuthor}
-            newRole={newRole}
-            setNewRole={setNewRole}
-            isSubmittingReview={isSubmittingReview}
-            handleDeleteSpot={handleDeleteSpot}
-            setAddingCoord={setAddingCoord}
-            handleAddSpotClick={handleAddSpotClick}
-          />
-        )}
+      <main className="flex-grow relative">
+        <AnimatePresence mode="wait">
+          {activeTab === 'home' && (
+            <motion.div
+              key="home"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.35, ease: 'easeInOut' }}
+              className="w-full h-full"
+            >
+              <MapPage
+                isMobile={isMobile}
+                isMobileDrawerExpanded={isMobileDrawerExpanded}
+                setIsMobileDrawerExpanded={setIsMobileDrawerExpanded}
+                selectedSpot={selectedSpot}
+                setSelectedSpot={setSelectedSpot}
+                spots={spots}
+                setSpots={setSpots}
+                categories={categories}
+                setCategories={setCategories}
+                isAdmin={isAdmin}
+                triggerNotification={triggerNotification}
+                loadSpots={loadSpots}
+                searchQuery={searchQuery}
+                setSearchQuery={setSearchQuery}
+                selectedCategory={selectedCategory}
+                setSelectedCategory={setSelectedCategory}
+                setActiveTab={setActiveTab}
+                getCategoryColor={getCategoryColor}
+                searchedSpots={searchedSpots}
+                averageRating={averageRating}
+                spotReviews={spotReviews}
+                isLoadingReviews={isLoadingReviews}
+                handleAddReview={handleAddReview}
+                newRating={newRating}
+                setNewRating={setNewRating}
+                newComment={newComment}
+                setNewComment={setNewComment}
+                newAuthor={newAuthor}
+                setNewAuthor={setNewAuthor}
+                newRole={newRole}
+                setNewRole={setNewRole}
+                isSubmittingReview={isSubmittingReview}
+                handleDeleteSpot={handleDeleteSpot}
+                setAddingCoord={setAddingCoord}
+                handleAddSpotClick={handleAddSpotClick}
+              />
+            </motion.div>
+          )}
 
-        {/* 1. Manifesto tab modular view */}
-        {activeTab === 'manifesto' && (
-          <ManifestoTab 
-            isMobile={isMobile}
-            expandedProgram={expandedProgram}
-            setExpandedProgram={setExpandedProgram}
-            spots={spots}
-            categories={categories}
-          />
-        )}
+          {activeTab === 'manifesto' && (
+            <motion.div
+              key="manifesto"
+              initial={{ opacity: 0, y: 12 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -12 }}
+              transition={{ duration: 0.35, ease: [0.16, 1, 0.3, 1] }}
+              className="w-full h-full"
+            >
+              <ManifestoTab 
+                isMobile={isMobile}
+                expandedProgram={expandedProgram}
+                setExpandedProgram={setExpandedProgram}
+                spots={spots}
+                categories={categories}
+              />
+            </motion.div>
+          )}
 
-        {/* 2. Members tab modular view */}
-        {activeTab === 'members' && (
-          <MembersTab />
-        )}
+          {activeTab === 'members' && (
+            <motion.div
+              key="members"
+              initial={{ opacity: 0, y: 12 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -12 }}
+              transition={{ duration: 0.35, ease: [0.16, 1, 0.3, 1] }}
+              className="w-full h-full"
+            >
+              <MembersTab />
+            </motion.div>
+          )}
 
-        {/* 3. Schedule tab modular view */}
-        {activeTab === 'schedule' && (
-          <ScheduleTab />
-        )}
+          {activeTab === 'schedule' && (
+            <motion.div
+              key="schedule"
+              initial={{ opacity: 0, y: 12 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -12 }}
+              transition={{ duration: 0.35, ease: [0.16, 1, 0.3, 1] }}
+              className="w-full h-full"
+            >
+              <ScheduleTab />
+            </motion.div>
+          )}
 
-        {/* 3.5. Credits & Sources tab modular view */}
-        {activeTab === 'credits' && (
-          <CreditsTab />
-        )}
+          {activeTab === 'credits' && (
+            <motion.div
+              key="credits"
+              initial={{ opacity: 0, y: 12 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -12 }}
+              transition={{ duration: 0.35, ease: [0.16, 1, 0.3, 1] }}
+              className="w-full h-full"
+            >
+              <CreditsTab />
+            </motion.div>
+          )}
 
-        {/* 4. Administrator full tabular board view */}
-        {activeTab === 'admin_table' && isAdmin && (
-          <AdminTableTab 
-            spots={spots}
-            setSpots={setSpots}
-            categories={categories}
-            setCategories={setCategories}
-            triggerNotification={triggerNotification}
-            setSelectedSpot={setSelectedSpot}
-          />
-        )}
-
+          {activeTab === 'admin_table' && isAdmin && (
+            <motion.div
+              key="admin_table"
+              initial={{ opacity: 0, y: 12 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -12 }}
+              transition={{ duration: 0.35, ease: [0.16, 1, 0.3, 1] }}
+              className="w-full h-full"
+            >
+              <AdminTableTab 
+                spots={spots}
+                setSpots={setSpots}
+                categories={categories}
+                setCategories={setCategories}
+                triggerNotification={triggerNotification}
+                setSelectedSpot={setSelectedSpot}
+              />
+            </motion.div>
+          )}
+        </AnimatePresence>
       </main>
 
       {/* FOOTER - only visible on standard scrollable pages, hidden on full-screen map to maximize canvas space */}

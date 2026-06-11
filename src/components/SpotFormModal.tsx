@@ -6,6 +6,7 @@
 import React, { useState } from 'react';
 import { Spot, Category } from '../types';
 import { X, Save, Crosshair, MapPin } from 'lucide-react';
+import { motion, AnimatePresence } from 'motion/react';
 
 interface SpotFormModalProps {
   x: number;
@@ -40,7 +41,13 @@ export default function SpotFormModal({ x, y, onClose, onSave, categories }: Spo
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-neutral-900/40 backdrop-blur-sm p-4 overflow-y-auto">
-      <div className="w-full max-w-lg bg-white rounded-[32px] border border-neutral-100 shadow-[0_24px_50px_rgba(0,0,0,0.12)] p-8 relative animate-scale-up">
+      <motion.div 
+        initial={{ opacity: 0, scale: 0.95, y: 15 }}
+        animate={{ opacity: 1, scale: 1, y: 0 }}
+        exit={{ opacity: 0, scale: 0.95, y: 15 }}
+        transition={{ type: 'spring', stiffness: 350, damping: 28 }}
+        className="w-full max-w-lg bg-white rounded-[32px] border border-neutral-100 shadow-[0_24px_50px_rgba(0,0,0,0.12)] p-8 relative"
+      >
         
         {/* Close Button */}
         <button
@@ -176,7 +183,7 @@ export default function SpotFormModal({ x, y, onClose, onSave, categories }: Spo
           </div>
         </form>
 
-      </div>
+      </motion.div>
     </div>
   );
 }

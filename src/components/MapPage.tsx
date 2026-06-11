@@ -84,7 +84,7 @@ export default function MapPage({
   handleAddSpotClick,
 }: MapPageProps) {
   return (
-    <div className="flex flex-col md:flex-row h-[calc(100vh-3.5rem)] w-full overflow-hidden bg-white animate-fade-in text-left">
+    <div className="flex flex-col lg:flex-row h-[calc(100vh-3.5rem)] w-full overflow-hidden bg-white animate-fade-in text-left">
       {/* Modular Sidebar Section */}
       <SpotSidebar
         isMobile={isMobile}
@@ -133,6 +133,7 @@ export default function MapPage({
           onAddSpotClick={handleAddSpotClick}
           selectedCategory={selectedCategory}
           categories={categories}
+          isMobileDrawerExpanded={isMobileDrawerExpanded}
         />
       </div>
     </div>
