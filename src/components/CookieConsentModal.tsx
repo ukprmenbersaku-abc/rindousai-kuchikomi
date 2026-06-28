@@ -271,8 +271,8 @@ export default function CookieConsentModal({ onConsentComplete }: CookieConsentM
                           onChange={(e) => setConsentGeolocation(e.target.checked)}
                           className="sr-only peer"
                         />
-                        <div className="w-10 h-5.5 bg-neutral-200 rounded-full peer peer-focus:ring-2 peer-focus:ring-violet-300 peer-checked:after:translate-x-full after:content-[''] after:absolute after:top-0.5 after:left-[2px] after:bg-white peer-checked:bg-violet-650 after:border-neutral-300 after:border after:rounded-full after:h-4.5 after:w-4.5 after:transition-all"></div>
-                        <span className="ml-2 font-bold text-[11px] text-violet-750 min-w-[28px]">
+                        <div className="w-10 h-5.5 bg-neutral-200 rounded-full peer peer-focus:ring-2 peer-focus:ring-violet-300 peer-checked:after:translate-x-full after:content-[''] after:absolute after:top-0.5 after:left-[2px] after:bg-white peer-checked:bg-violet-600 after:border-neutral-300 after:border after:rounded-full after:h-4.5 after:w-4.5 after:transition-all"></div>
+                        <span className="ml-2 font-bold text-[11px] text-violet-700 min-w-[28px]">
                           {consentGeolocation ? '使用する' : 'オフ'}
                         </span>
                       </label>
@@ -305,7 +305,7 @@ export default function CookieConsentModal({ onConsentComplete }: CookieConsentM
 
               <button
                 onClick={handleAcceptAll}
-                className="w-full sm:w-auto px-5.5 py-2.5 bg-violet-650 hover:bg-violet-700 text-white font-bold text-xs rounded-xl shadow-md transition-all cursor-pointer text-center flex items-center justify-center gap-1.5"
+                className="w-full sm:w-auto px-5.5 py-2.5 bg-violet-600 hover:bg-violet-700 text-white font-bold text-xs rounded-xl shadow-md transition-all cursor-pointer text-center flex items-center justify-center gap-1.5"
                 title="すべての機能性に同意して開始します"
               >
                 <Check className="w-3.5 h-3.5 text-white" />

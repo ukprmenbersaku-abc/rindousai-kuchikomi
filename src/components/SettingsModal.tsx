@@ -83,7 +83,7 @@ export default function SettingsModal({ onClose, onSavePreferences }: SettingsMo
   };
 
   return (
-    <div className="fixed inset-0 z-50 bg-neutral-955/70 backdrop-blur-md flex items-center justify-center p-4 overflow-y-auto">
+    <div className="fixed inset-0 z-50 bg-neutral-900/70 backdrop-blur-md flex items-center justify-center p-4 overflow-y-auto">
       <motion.div 
         initial={{ opacity: 0, scale: 0.95, y: 15 }}
         animate={{ opacity: 1, scale: 1, y: 0 }}
@@ -92,7 +92,7 @@ export default function SettingsModal({ onClose, onSavePreferences }: SettingsMo
         className="bg-white text-neutral-800 max-w-xl w-full rounded-[28px] border border-neutral-100 shadow-2xl overflow-hidden flex flex-col my-8 text-left"
       >
         {/* Header */}
-        <div className="px-6 py-5 bg-gradient-to-r from-neutral-850 to-neutral-950 text-white flex items-center justify-between">
+        <div className="px-6 py-5 bg-gradient-to-r from-neutral-800 to-neutral-950 text-white flex items-center justify-between">
           <div className="flex items-center gap-2">
             <Cookie className="w-5 h-5 text-violet-400" />
             <h2 className="text-sm font-black tracking-wider uppercase">
@@ -101,7 +101,7 @@ export default function SettingsModal({ onClose, onSavePreferences }: SettingsMo
           </div>
           <button 
             onClick={onClose}
-            className="text-white/70 hover:text-white hover:bg-white/10 p-1.5 rounded-lg transition-colors cursor-pointer"
+            className="text-white/70 hover:text-white hover:bg-white/15 p-1.5 rounded-lg transition-colors cursor-pointer"
           >
             <X className="w-4 h-4" />
           </button>
@@ -112,23 +112,23 @@ export default function SettingsModal({ onClose, onSavePreferences }: SettingsMo
           
           {/* Section 1: Cookie & GPS Configuration */}
           <div className="space-y-4">
-            <h3 className="text-xs font-black text-neutral-900 tracking-wide uppercase border-l-2 border-violet-500 pl-2">
+            <h3 className="text-sm font-black text-neutral-950 tracking-wide uppercase border-l-2 border-violet-500 pl-2">
               プライバシー・GPS設定
             </h3>
             
-            <p className="text-[11px] sm:text-xs text-neutral-500 leading-relaxed">
+            <p className="text-xs sm:text-sm text-neutral-500 leading-relaxed">
               マップ設定のパーソナライズ、利用状況の統計、およびGPSによる現在位置の自己表示機能をお好みに合わせて変更できます。
             </p>
 
-            <div className="border border-neutral-200/80 rounded-2xl divide-y divide-neutral-150 overflow-hidden text-xs">
+            <div className="border border-neutral-200/80 rounded-2xl divide-y divide-neutral-200 overflow-hidden text-xs">
               
               {/* Necessary */}
               <div className="p-4 bg-neutral-50/60 space-y-1">
                 <div className="flex items-center justify-between">
-                  <span className="font-bold text-neutral-800">1. 必須クッキー (Necessary)</span>
-                  <span className="text-[9px] bg-neutral-200 text-neutral-600 px-2 py-0.5 rounded-full font-bold uppercase tracking-wider">常にオン</span>
+                  <span className="font-extrabold text-neutral-800 text-[13px]">1. 必須クッキー (Necessary)</span>
+                  <span className="text-[10px] bg-neutral-200 text-neutral-700 px-2 py-0.5 rounded-full font-black uppercase tracking-wider">常にオン</span>
                 </div>
-                <p className="text-[10px] text-neutral-400 leading-relaxed font-sans mt-1">
+                <p className="text-xs text-neutral-500 leading-relaxed font-sans mt-1">
                   システムのコア動作、同意ステータスの保持、および口コミ投稿の読み込み確認に利用されます。
                 </p>
               </div>
@@ -137,8 +137,8 @@ export default function SettingsModal({ onClose, onSavePreferences }: SettingsMo
               <div className="p-4 bg-white space-y-2">
                 <div className="flex items-center justify-between">
                   <div>
-                    <span className="font-bold text-neutral-800 block">2. 機能性クッキー (Functional)</span>
-                    <span className="text-[10px] text-neutral-400 leading-relaxed font-sans mt-0.5 block">
+                    <span className="font-extrabold text-neutral-800 text-[13px] block">2. 機能性クッキー (Functional)</span>
+                    <span className="text-xs text-neutral-500 leading-relaxed font-sans mt-0.5 block">
                       マップのズームスケールや回転角度の設定を次回表示時まで状態保持するために利用されます。
                     </span>
                   </div>
@@ -160,9 +160,9 @@ export default function SettingsModal({ onClose, onSavePreferences }: SettingsMo
               <div className="p-4 bg-white space-y-2">
                 <div className="flex items-center justify-between">
                   <div>
-                    <span className="font-bold text-neutral-800 block">3. 統計・分析クッキー (Analytics)</span>
-                    <span className="text-[10px] text-neutral-400 leading-relaxed font-sans mt-0.5 block">
-                      アクセス統計を記録し、今後のりんどう祭での誘導設計の改善に役立てられます（完全な匿名データ）。
+                    <span className="font-extrabold text-neutral-800 text-[13px] block">3. 統計・分析クッキー (Analytics)</span>
+                    <span className="text-xs text-neutral-500 leading-relaxed font-sans mt-0.5 block">
+                      アクセス統計を記録し、今後のりんどう祭での誘導設計의改善に役立てられます（完全な匿名データ）。
                     </span>
                   </div>
                   <div className="shrink-0 flex items-center justify-end pl-4">
@@ -183,14 +183,14 @@ export default function SettingsModal({ onClose, onSavePreferences }: SettingsMo
               <div className="p-4 bg-violet-50/30 space-y-2">
                 <div className="flex items-center justify-between">
                   <div>
-                    <span className="font-bold text-violet-950 flex items-center gap-1.5">
-                      <Navigation className="w-3.5 h-3.5 text-violet-605" />
+                    <span className="font-extrabold text-violet-900 text-[13.5px] flex items-center gap-1.5">
+                      <Navigation className="w-4.5 h-4.5 text-violet-600" />
                       <span>4. GPSによる現在地表示許可 (Geolocation)</span>
                     </span>
-                    <span className="text-[10px] text-neutral-600 leading-relaxed font-sans mt-1 block">
+                    <span className="text-xs sm:text-[13px] text-neutral-700 leading-relaxed font-sans mt-1.5 block">
                       りんどう祭りの現地において、ご自身の位置を校内デザインマップ（運動場、各校舎、体育館）へリアルタイムに自己投影します。
                     </span>
-                    <strong className="text-[10px] text-violet-700 font-bold block mt-1 leading-normal">
+                    <strong className="text-xs text-violet-800 font-extrabold block mt-1.5 leading-normal">
                       ※この位置情報は他の参加者には一切共有されず、サーバーにも送信されません。端末の中だけで計算されます。
                     </strong>
                   </div>
@@ -202,7 +202,7 @@ export default function SettingsModal({ onClose, onSavePreferences }: SettingsMo
                         onChange={(e) => setConsentGeolocation(e.target.checked)}
                         className="sr-only peer"
                       />
-                      <div className="w-10 h-5.5 bg-neutral-200 rounded-full peer peer-checked:after:translate-x-full after:content-[''] after:absolute after:top-0.5 after:left-[2px] after:bg-white after:border-neutral-300 Peer-checked:bg-violet-650 after:border after:rounded-full after:h-4.5 after:w-4.5 after:transition-all"></div>
+                      <div className="w-10 h-5.5 bg-neutral-200 rounded-full peer peer-checked:after:translate-x-full after:content-[''] after:absolute after:top-0.5 after:left-[2px] after:bg-white after:border-neutral-300 peer-checked:bg-violet-600 after:border after:rounded-full after:h-4.5 after:w-4.5 after:transition-all"></div>
                     </label>
                   </div>
                 </div>
@@ -213,30 +213,30 @@ export default function SettingsModal({ onClose, onSavePreferences }: SettingsMo
 
           {/* Section 2: Quick credit view for perfect transparency */}
           <div className="bg-neutral-50/80 rounded-2xl border border-neutral-200/50 p-4 space-y-2.5">
-            <h4 className="font-bold text-neutral-800 text-[11px] uppercase tracking-wider flex items-center gap-1.5">
+            <h4 className="font-bold text-neutral-800 text-xs uppercase tracking-wider flex items-center gap-1.5">
               <Map className="w-4 h-4 text-violet-500" />
               <span>マップクレジット・出典確認</span>
             </h4>
-            <p className="text-[10px] text-neutral-500 leading-relaxed">
+            <p className="text-xs sm:text-[13px] text-neutral-500 leading-relaxed">
               マップデータは「国土地理院空中写真（航空写真）」を利用し、本アプリ作成者がgemini.google.comを用いてイラスト加工。Google AI Studio環境で構築された公式マップビューワです。
             </p>
-            <div className="bg-amber-50 rounded-xl p-3 border border-amber-100 text-[10.5px] text-neutral-700 leading-relaxed font-serif italic">
+            <div className="bg-amber-50 rounded-xl p-3 border border-amber-100 text-xs text-neutral-700 leading-relaxed font-serif italic">
               「出典：国土地理院の空中写真を基に、本ツール作成者がgemini.google.comを用いてイラスト化（加工）して作成。」
             </div>
           </div>
 
           {/* Section 3: Force settings reset */}
-          <div className="flex items-center justify-between p-3.5 bg-rose-50/50 border border-rose-150/50 rounded-2xl">
+          <div className="flex items-center justify-between p-4 bg-rose-50/50 border border-rose-200/50 rounded-2xl gap-3 text-left">
             <div className="space-y-0.5">
-              <span className="text-xs font-bold text-rose-800 block">データの初期化</span>
-              <span className="text-[10px] text-rose-600 block">登録データの同意履歴、Cookieをリセットして初回用の状態に戻します。</span>
+              <span className="text-xs font-black text-rose-800 block">データの初期化</span>
+              <span className="text-xs text-rose-600 block leading-normal">登録データの同意履歴、Cookieをリセットして初回用の状態に戻します。</span>
             </div>
             <button
               onClick={handleResetConsent}
               type="button"
-              className="px-3.5 py-2 hover:bg-rose-100 text-rose-700 hover:text-rose-950 font-bold text-[10px] rounded-xl border border-rose-200 transition-colors cursor-pointer flex items-center gap-1 shrink-0"
+              className="px-4 py-2 hover:bg-rose-100 text-rose-700 hover:text-rose-950 font-black text-xs rounded-xl border border-rose-200 transition-colors cursor-pointer flex items-center gap-1.5 shrink-0"
             >
-              <RotateCcw className="w-3 h-3" />
+              <RotateCcw className="w-3.5 h-3.5" />
               <span>初期化する</span>
             </button>
           </div>
@@ -256,7 +256,7 @@ export default function SettingsModal({ onClose, onSavePreferences }: SettingsMo
             onClick={handleSave}
             disabled={isSaved}
             className={`px-5 py-2.5 rounded-xl font-bold text-xs tracking-wider text-white shadow-md flex items-center gap-1.5 transition-all cursor-pointer ${
-              isSaved ? 'bg-emerald-600 shadow-emerald-600/10' : 'bg-violet-650 hover:bg-violet-700'
+              isSaved ? 'bg-emerald-600 shadow-emerald-600/10' : 'bg-violet-600 hover:bg-violet-700'
             }`}
           >
             {isSaved ? (

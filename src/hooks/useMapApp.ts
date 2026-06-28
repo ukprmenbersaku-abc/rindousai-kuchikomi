@@ -106,46 +106,46 @@ export function useMapApp() {
     if (!found) {
       return {
         label: '特別催し・その他',
-        textBg: 'bg-rose-50 border-rose-150 text-rose-700',
+        textBg: 'bg-rose-50 border-rose-200 text-rose-700',
         bg: 'bg-rose-500',
       };
     }
 
-    let textBgStr = 'bg-rose-50 border-rose-155 text-rose-700';
+    let textBgStr = 'bg-rose-50 border-rose-200 text-rose-700';
     let bgStr = 'bg-rose-500';
 
     switch (found.color) {
       case 'indigo':
-        textBgStr = 'bg-indigo-50 border-indigo-150 text-indigo-700';
+        textBgStr = 'bg-indigo-50 border-indigo-200 text-indigo-700';
         bgStr = 'bg-indigo-500';
         break;
       case 'emerald':
-        textBgStr = 'bg-emerald-50 border-emerald-155 text-emerald-700';
+        textBgStr = 'bg-emerald-50 border-emerald-200 text-emerald-700';
         bgStr = 'bg-emerald-500';
         break;
       case 'amber':
-        textBgStr = 'bg-amber-50 border-amber-155 text-amber-700';
+        textBgStr = 'bg-amber-50 border-amber-200 text-amber-700';
         bgStr = 'bg-amber-500';
         break;
       case 'violet':
-        textBgStr = 'bg-violet-50 border-violet-155 text-violet-700';
+        textBgStr = 'bg-violet-50 border-violet-200 text-violet-700';
         bgStr = 'bg-violet-500';
         break;
       case 'teal':
-        textBgStr = 'bg-teal-50 border-teal-155 text-teal-700';
+        textBgStr = 'bg-teal-50 border-teal-200 text-teal-700';
         bgStr = 'bg-teal-500';
         break;
       case 'orange':
-        textBgStr = 'bg-orange-50 border-orange-155 text-orange-700';
+        textBgStr = 'bg-orange-50 border-orange-200 text-orange-700';
         bgStr = 'bg-orange-500';
         break;
       case 'fuchsia':
-        textBgStr = 'bg-fuchsia-50 border-fuchsia-155 text-fuchsia-700';
+        textBgStr = 'bg-fuchsia-50 border-fuchsia-200 text-fuchsia-700';
         bgStr = 'bg-fuchsia-500';
         break;
       case 'rose':
       default:
-        textBgStr = 'bg-rose-50 border-rose-155 text-rose-700';
+        textBgStr = 'bg-rose-50 border-rose-200 text-rose-700';
         bgStr = 'bg-rose-500';
         break;
     }
@@ -162,7 +162,8 @@ export function useMapApp() {
     const matchesCategory = !selectedCategory || s.category === selectedCategory;
     const matchesSearch = !searchQuery.trim() || 
       s.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      (s.description?.toLowerCase().includes(searchQuery.toLowerCase()));
+      (s.description?.toLowerCase().includes(searchQuery.toLowerCase())) ||
+      (s.tags?.toLowerCase().includes(searchQuery.toLowerCase()));
     return matchesCategory && matchesSearch;
   });
 

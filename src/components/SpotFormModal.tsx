@@ -22,6 +22,8 @@ export default function SpotFormModal({ x, y, onClose, onSave, categories }: Spo
   const [category, setCategory] = useState<string>(categories[0]?.id || 'stage');
   const [coordX, setCoordX] = useState<number>(x);
   const [coordY, setCoordY] = useState<number>(y);
+  const [tags, setTags] = useState('');
+  const [floor, setFloor] = useState('1階');
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -35,6 +37,8 @@ export default function SpotFormModal({ x, y, onClose, onSave, categories }: Spo
       y: Number(coordY),
       description: description.trim(),
       category,
+      tags: tags.trim(),
+      floor,
     });
     setIsSubmitting(false);
   };
@@ -80,7 +84,7 @@ export default function SpotFormModal({ x, y, onClose, onSave, categories }: Spo
           </div>
           <div className="grid grid-cols-2 gap-3">
             <div>
-              <label className="block text-[10px] font-bold text-neutral-400 mb-1">X 座標 (0〜100%)</label>
+              <label className="block text-xs font-bold text-neutral-500 mb-1">X 座標 (0〜100%)</label>
               <input
                 type="number"
                 step="0.01"
@@ -93,7 +97,7 @@ export default function SpotFormModal({ x, y, onClose, onSave, categories }: Spo
               />
             </div>
             <div>
-              <label className="block text-[10px] font-bold text-neutral-400 mb-1">Y 座標 (0〜100%)</label>
+              <label className="block text-xs font-bold text-neutral-500 mb-1">Y 座標 (0〜100%)</label>
               <input
                 type="number"
                 step="0.01"
@@ -106,7 +110,7 @@ export default function SpotFormModal({ x, y, onClose, onSave, categories }: Spo
               />
             </div>
           </div>
-          <p className="text-[9px] text-neutral-400 mt-2 leading-tight">
+          <p className="text-[11px] sm:text-xs text-neutral-500 mt-2.5 leading-normal">
             ※数値を直接入力して配置位置をコントロールできます。ステージ発表は「42.5, 35」、展示企画は「22, 55.5」や「81.3, 28.5」、模擬店は「62.5, 72」が基準点となります。
           </p>
         </div>
@@ -123,7 +127,7 @@ export default function SpotFormModal({ x, y, onClose, onSave, categories }: Spo
               value={name}
               onChange={(e) => setName(e.target.value)}
               placeholder="例: 第1体育館 (メインステージ)、3F 2-A教室など"
-              className="w-full px-4 py-3 rounded-xl border border-neutral-200 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 text-sm placeholder-neutral-400 transition-all duration-200"
+              className="w-full px-4 py-3 rounded-xl border border-neutral-200 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 text-sm placeholder-neutral-400 transition-all duration-200 text-neutral-800 font-medium"
             />
           </div>
 
@@ -150,6 +154,38 @@ export default function SpotFormModal({ x, y, onClose, onSave, categories }: Spo
             </div>
           </div>
 
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div>
+              <label className="block text-xs font-bold text-neutral-600 uppercase tracking-wider mb-2">
+                フロア・階数
+              </label>
+              <select
+                value={floor}
+                onChange={(e) => setFloor(e.target.value)}
+                className="w-full px-4 py-2.5 rounded-xl border border-neutral-200 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 text-sm bg-white text-neutral-800 font-medium"
+              >
+                <option value="1階">1階</option>
+                <option value="2階">2階</option>
+                <option value="3階">3階</option>
+                <option value="4階">4階</option>
+                <option value="屋外">屋外</option>
+              </select>
+            </div>
+
+            <div>
+              <label className="block text-xs font-bold text-neutral-600 uppercase tracking-wider mb-2">
+                タグ（半角スペース、カンマ等で区切り）
+              </label>
+              <input
+                type="text"
+                value={tags}
+                onChange={(e) => setTags(e.target.value)}
+                placeholder="例: たこ焼き, 模擬店, 2年A組"
+                className="w-full px-4 py-2.5 rounded-xl border border-neutral-200 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 text-sm placeholder-neutral-400 text-neutral-800 font-medium"
+              />
+            </div>
+          </div>
+
           <div>
             <label className="block text-xs font-bold text-neutral-600 uppercase tracking-wider mb-2">
               スポットの紹介・解説
@@ -159,7 +195,7 @@ export default function SpotFormModal({ x, y, onClose, onSave, categories }: Spo
               onChange={(e) => setDescription(e.target.value)}
               rows={3}
               placeholder="例: ここではどのような発表・企画が行われるか、またはイベントの詳細について分かりやすい解説文を記入してください。"
-              className="w-full px-4 py-3 rounded-xl border border-neutral-200 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 text-sm placeholder-neutral-400 transition-all duration-200 resize-none"
+              className="w-full px-4 py-3 rounded-xl border border-neutral-200 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 text-sm placeholder-neutral-400 transition-all duration-200 resize-none text-neutral-800 font-medium"
             />
           </div>
 

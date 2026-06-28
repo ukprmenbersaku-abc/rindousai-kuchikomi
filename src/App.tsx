@@ -9,7 +9,6 @@ import MapPage from './components/MapPage';
 import SpotFormModal from './components/SpotFormModal';
 import ReviewModal from './components/ReviewModal';
 import ManifestoTab from './components/ManifestoTab';
-import MembersTab from './components/MembersTab';
 import ScheduleTab from './components/ScheduleTab';
 import AdminTableTab from './components/AdminTableTab';
 import CookieConsentModal from './components/CookieConsentModal';
@@ -107,7 +106,7 @@ export default function App() {
       </AnimatePresence>
 
       {/* Interactive Main Body Content */}
-      <main className="flex-grow relative">
+      <main className="flex-grow relative z-10">
         <AnimatePresence mode="wait">
           {activeTab === 'home' && (
             <motion.div
@@ -167,26 +166,7 @@ export default function App() {
               transition={{ duration: 0.35, ease: [0.16, 1, 0.3, 1] }}
               className="w-full h-full"
             >
-              <ManifestoTab 
-                isMobile={isMobile}
-                expandedProgram={expandedProgram}
-                setExpandedProgram={setExpandedProgram}
-                spots={spots}
-                categories={categories}
-              />
-            </motion.div>
-          )}
-
-          {activeTab === 'members' && (
-            <motion.div
-              key="members"
-              initial={{ opacity: 0, y: 12 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -12 }}
-              transition={{ duration: 0.35, ease: [0.16, 1, 0.3, 1] }}
-              className="w-full h-full"
-            >
-              <MembersTab />
+              <ManifestoTab />
             </motion.div>
           )}
 
@@ -255,10 +235,10 @@ export default function App() {
               {/* Column 2 Copy & Logout */}
               <div className="flex flex-col md:flex-row md:items-center md:justify-between w-full gap-4">
                 <div>
-                  <p className="text-neutral-500 font-mono text-[10px]">
+                  <p className="text-neutral-500 font-mono text-xs">
                     CAMPUS MAP PLATFORM v1.2
                   </p>
-                  <p className="text-neutral-400 text-[10px] mt-0.5">
+                  <p className="text-neutral-400 text-xs mt-0.5">
                     © 2026 Chikumano Junior High School Rindo Festival Committee.
                   </p>
                 </div>
@@ -271,7 +251,7 @@ export default function App() {
                       window.location.hash = 'home';
                       triggerNotification('🔒 ログアウトしました。一般表示に戻ります。');
                     }} 
-                    className="hover:text-neutral-100 text-neutral-400 transition-colors duration-150 flex items-center gap-1 text-[11px] font-bold self-start md:self-auto cursor-pointer"
+                    className="hover:text-neutral-100 text-neutral-400 transition-colors duration-150 flex items-center gap-1 text-xs font-black self-start md:self-auto cursor-pointer"
                   >
                     <span>一般ユーザー表示に戻る</span>
                     <ChevronRight className="w-3.5 h-3.5" />

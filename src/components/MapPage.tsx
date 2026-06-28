@@ -83,6 +83,9 @@ export default function MapPage({
   setAddingCoord,
   handleAddSpotClick,
 }: MapPageProps) {
+  const [drawerHeight, setDrawerHeight] = React.useState<number>(selectedSpot ? 110 : 64);
+  const [isDragging, setIsDragging] = React.useState(false);
+
   return (
     <div className="flex flex-col lg:flex-row h-[calc(100vh-3.5rem)] w-full overflow-hidden bg-white animate-fade-in text-left">
       {/* Modular Sidebar Section */}
@@ -121,12 +124,24 @@ export default function MapPage({
         isSubmittingReview={isSubmittingReview}
         handleDeleteSpot={handleDeleteSpot}
         setAddingCoord={setAddingCoord}
+        drawerHeight={drawerHeight}
+        setDrawerHeight={setDrawerHeight}
+        isDragging={isDragging}
+        setIsDragging={setIsDragging}
       />
 
       {/* Google Maps style right-hand canvas mapping viewport */}
-      <div className="flex-1 h-full min-w-0 overflow-hidden relative bg-neutral-100">
+      <div 
+        style={isMobile ? {
+          height: `calc(100vh - 3.5rem - ${drawerHeight}px)`,
+          transition: isDragging ? 'none' : 'height 0.3s cubic-bezier(0.16, 1, 0.3, 1)'
+        } : undefined}
+        className={`flex-1 min-w-0 overflow-hidden relative bg-neutral-100 ${
+          isMobile ? '' : 'h-full transition-all duration-300 ease-in-out'
+        }`}
+      >
         <MapContainer
-          spots={spots}
+          spots={searchedSpots}
           selectedSpot={selectedSpot}
           onSelectSpot={setSelectedSpot}
           isAdmin={isAdmin}

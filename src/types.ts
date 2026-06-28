@@ -16,6 +16,8 @@ export interface Spot {
   y: number; // percentage coordinate 0 to 100
   description: string;
   category: string;
+  tags?: string;
+  floor?: string;
   createdAt?: string;
 }
 

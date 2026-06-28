@@ -16,9 +16,19 @@ interface Env {
   };
 }
 
+async function ensureSchema(DB: any) {
+  try {
+    await DB.prepare("ALTER TABLE rindou_kuchikomi_spots ADD COLUMN tags TEXT").run();
+  } catch (e) {}
+  try {
+    await DB.prepare("ALTER TABLE rindou_kuchikomi_spots ADD COLUMN floor TEXT").run();
+  } catch (e) {}
+}
+
 export const onRequestGet: PagesFunction<Env> = async (context) => {
   try {
     const { DB } = context.env;
+    await ensureSchema(DB);
     const { results } = await DB.prepare("SELECT * FROM rindou_kuchikomi_spots ORDER BY id DESC").all();
     return new Response(JSON.stringify(results), {
       headers: { "Content-Type": "application/json" },
@@ -34,8 +44,9 @@ export const onRequestGet: PagesFunction<Env> = async (context) => {
 export const onRequestPost: PagesFunction<Env> = async (context) => {
   try {
     const { DB } = context.env;
+    await ensureSchema(DB);
     const data: any = await context.request.json();
-    const { id, name, x, y, description, category } = data;
+    const { id, name, x, y, description, category, tags, floor } = data;
 
     if (!name || x === undefined || y === undefined || !category) {
       return new Response(JSON.stringify({ error: "Missing required fields" }), {
@@ -47,15 +58,15 @@ export const onRequestPost: PagesFunction<Env> = async (context) => {
     let info;
     if (id) {
       info = await DB.prepare(
-        "UPDATE rindou_kuchikomi_spots SET name = ?, x = ?, y = ?, description = ?, category = ? WHERE id = ? RETURNING *"
+        "UPDATE rindou_kuchikomi_spots SET name = ?, x = ?, y = ?, description = ?, category = ?, tags = ?, floor = ? WHERE id = ? RETURNING *"
       )
-        .bind(name, x, y, description || "", category, Number(id))
+        .bind(name, x, y, description || "", category, tags || "", floor || "", Number(id))
         .first();
     } else {
       info = await DB.prepare(
-        "INSERT INTO rindou_kuchikomi_spots (name, x, y, description, category) VALUES (?, ?, ?, ?, ?) RETURNING *"
+        "INSERT INTO rindou_kuchikomi_spots (name, x, y, description, category, tags, floor) VALUES (?, ?, ?, ?, ?, ?, ?) RETURNING *"
       )
-        .bind(name, x, y, description || "", category)
+        .bind(name, x, y, description || "", category, tags || "", floor || "")
         .first();
     }
 

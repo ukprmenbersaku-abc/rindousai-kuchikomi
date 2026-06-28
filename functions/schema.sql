@@ -11,6 +11,8 @@ CREATE TABLE IF NOT EXISTS rindou_kuchikomi_spots (
   y REAL NOT NULL,
   description TEXT,
   category TEXT NOT NULL,
+  tags TEXT,
+  floor TEXT,
   created_at TEXT DEFAULT CURRENT_TIMESTAMP
 );
 

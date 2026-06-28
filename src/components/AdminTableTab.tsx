@@ -40,6 +40,8 @@ export default function AdminTableTab({
   const [tableSpotCat, setTableSpotCat] = useState('stage');
   const [tableSpotX, setTableSpotX] = useState<number>(50);
   const [tableSpotY, setTableSpotY] = useState<number>(50);
+  const [tableSpotTags, setTableSpotTags] = useState('');
+  const [tableSpotFloor, setTableSpotFloor] = useState('1階');
 
   // Localized form states for adding categories
   const [newCategoryLabel, setNewCategoryLabel] = useState('');
@@ -296,7 +298,7 @@ export default function AdminTableTab({
                       placeholder="例: 第1体育館 (メインステージ)"
                       value={tableSpotName}
                       onChange={(e) => setTableSpotName(e.target.value)}
-                      className="w-full bg-neutral-50 hover:bg-neutral-100/50 focus:bg-white border border-neutral-200 focus:border-indigo-500 text-xs rounded-xl px-3.5 py-2.5 transition-all outline-none"
+                      className="w-full bg-neutral-50 hover:bg-neutral-100/50 focus:bg-white border border-neutral-200 focus:border-indigo-500 text-xs text-neutral-800 font-medium rounded-xl px-3.5 py-2.5 transition-all outline-none"
                     />
                   </div>
                   <div>
@@ -306,7 +308,7 @@ export default function AdminTableTab({
                     <select
                       value={tableSpotCat}
                       onChange={(e) => setTableSpotCat(e.target.value)}
-                      className="w-full bg-neutral-50 hover:bg-neutral-100/55 focus:bg-white border border-neutral-200 focus:border-indigo-500 text-xs rounded-xl px-3.5 py-2.5 transition-all outline-none"
+                      className="w-full bg-neutral-50 hover:bg-neutral-100/55 focus:bg-white border border-neutral-200 focus:border-indigo-500 text-xs text-neutral-800 font-medium rounded-xl px-3.5 py-2.5 transition-all outline-none"
                     >
                       {categories.map((cat) => (
                         <option key={cat.id} value={cat.id}>
@@ -329,7 +331,7 @@ export default function AdminTableTab({
                       step="0.01"
                       value={tableSpotX}
                       onChange={(e) => setTableSpotX(parseFloat(e.target.value) || 0)}
-                      className="w-full bg-neutral-50 hover:bg-neutral-100/50 focus:bg-white border border-neutral-200 focus:border-indigo-500 text-xs rounded-xl px-3.5 py-2.5 transition-all outline-none font-mono"
+                      className="w-full bg-neutral-50 hover:bg-neutral-100/50 focus:bg-white border border-neutral-200 focus:border-indigo-500 text-xs text-neutral-800 font-medium rounded-xl px-3.5 py-2.5 transition-all outline-none font-mono"
                     />
                   </div>
                   <div>
@@ -343,7 +345,38 @@ export default function AdminTableTab({
                       step="0.01"
                       value={tableSpotY}
                       onChange={(e) => setTableSpotY(parseFloat(e.target.value) || 0)}
-                      className="w-full bg-neutral-50 hover:bg-neutral-100/50 focus:bg-white border border-neutral-200 focus:border-indigo-500 text-xs rounded-xl px-3.5 py-2.5 transition-all outline-none font-mono"
+                      className="w-full bg-neutral-50 hover:bg-neutral-100/50 focus:bg-white border border-neutral-200 focus:border-indigo-500 text-xs text-neutral-800 font-medium rounded-xl px-3.5 py-2.5 transition-all outline-none font-mono"
+                    />
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-[10px] font-black text-neutral-500 uppercase tracking-wider mb-1">
+                      フロア・階数
+                    </label>
+                    <select
+                      value={tableSpotFloor}
+                      onChange={(e) => setTableSpotFloor(e.target.value)}
+                      className="w-full bg-neutral-50 hover:bg-neutral-100/50 focus:bg-white border border-neutral-200 focus:border-indigo-500 text-xs text-neutral-800 font-medium rounded-xl px-3.5 py-2.5 transition-all outline-none"
+                    >
+                      <option value="1階">1階</option>
+                      <option value="2階">2階</option>
+                      <option value="3階">3階</option>
+                      <option value="4階">4階</option>
+                      <option value="屋外">屋外</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label className="block text-[10px] font-black text-neutral-500 uppercase tracking-wider mb-1">
+                      タグ（半角スペース、カンマ等で区切り）
+                    </label>
+                    <input
+                      type="text"
+                      placeholder="例: たこ焼き 模擬店 2年A組"
+                      value={tableSpotTags}
+                      onChange={(e) => setTableSpotTags(e.target.value)}
+                      className="w-full bg-neutral-50 hover:bg-neutral-100/50 focus:bg-white border border-neutral-200 focus:border-indigo-500 text-xs text-neutral-800 font-medium rounded-xl px-3.5 py-2.5 transition-all outline-none"
                     />
                   </div>
                 </div>
@@ -357,7 +390,7 @@ export default function AdminTableTab({
                     value={tableSpotDesc}
                     onChange={(e) => setTableSpotDesc(e.target.value)}
                     rows={2}
-                    className="w-full bg-neutral-50 hover:bg-neutral-100/50 focus:bg-white border border-neutral-200 focus:border-indigo-500 text-xs rounded-xl px-3.5 py-2.5 transition-all outline-none resize-none"
+                    className="w-full bg-neutral-50 hover:bg-neutral-100/50 focus:bg-white border border-neutral-200 focus:border-indigo-500 text-xs text-neutral-800 font-medium rounded-xl px-3.5 py-2.5 transition-all outline-none resize-none"
                   />
                 </div>
 
@@ -369,6 +402,8 @@ export default function AdminTableTab({
                         setEditingSpotId(null);
                         setTableSpotName('');
                         setTableSpotDesc('');
+                        setTableSpotTags('');
+                        setTableSpotFloor('1階');
                         setTableSpotX(50);
                         setTableSpotY(50);
                         triggerNotification('編集をキャンセルしました');
@@ -394,6 +429,8 @@ export default function AdminTableTab({
                           y: Math.max(0, Math.min(100, parseFloat(tableSpotY.toFixed(2)))),
                           description: tableSpotDesc.trim(),
                           category: tableSpotCat,
+                          tags: tableSpotTags.trim(),
+                          floor: tableSpotFloor,
                         };
 
                         const saved = await api.saveSpot(spotData);
@@ -408,6 +445,8 @@ export default function AdminTableTab({
                           }
                           setTableSpotName('');
                           setTableSpotDesc('');
+                          setTableSpotTags('');
+                          setTableSpotFloor('1階');
                           setSelectedSpot(saved);
                         }
                       } catch (err) {
@@ -555,7 +594,9 @@ export default function AdminTableTab({
                     <thead>
                       <tr className="bg-neutral-50 border-b border-neutral-200/60 text-[10px] font-black text-neutral-500 uppercase tracking-wider font-sans">
                         <th className="py-3 px-4">スポット名 / 説明</th>
+                        <th className="py-3 px-4">フロア</th>
                         <th className="py-3 px-4">カテゴリー</th>
+                        <th className="py-3 px-4">タグ</th>
                         <th className="py-3 px-4">座標 (X, Y)</th>
                         <th className="py-3 px-4 w-24 text-center">操作</th>
                       </tr>
@@ -569,11 +610,27 @@ export default function AdminTableTab({
                               <div className="font-bold text-neutral-800">{spot.name}</div>
                               <div className="text-[10px] text-neutral-400 mt-0.5 line-clamp-1">{spot.description}</div>
                             </td>
+                            <td className="py-3.5 px-4 text-left font-bold text-neutral-600">
+                              {spot.floor || '屋外'}
+                            </td>
                             <td className="py-3.5 px-4 text-left">
                               <span className={`inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-[10px] font-bold bg-neutral-50 text-neutral-700`}>
                                 <span className={`w-1.5 h-1.5 rounded-full bg-indigo-500`} />
                                 {cat?.label || 'その他'}
                               </span>
+                            </td>
+                            <td className="py-3.5 px-4 text-left">
+                              {spot.tags ? (
+                                <div className="flex flex-wrap gap-1 max-w-[150px]">
+                                  {spot.tags.split(/[,，、\s]+/).filter(Boolean).map((t, idx) => (
+                                    <span key={idx} className="bg-neutral-100 text-neutral-600 px-1.5 py-0.5 rounded text-[9px] font-medium">
+                                      #{t}
+                                    </span>
+                                  ))}
+                                </div>
+                              ) : (
+                                <span className="text-neutral-300">-</span>
+                              )}
                             </td>
                             <td className="py-3.5 px-4 font-mono text-[10px] text-neutral-500 font-bold text-left">
                               {spot.x.toFixed(2)}% , {spot.y.toFixed(2)}%
@@ -586,6 +643,8 @@ export default function AdminTableTab({
                                     setTableSpotName(spot.name);
                                     setTableSpotDesc(spot.description || '');
                                     setTableSpotCat(spot.category);
+                                    setTableSpotTags(spot.tags || '');
+                                    setTableSpotFloor(spot.floor || '1階');
                                     setTableSpotX(spot.x);
                                     setTableSpotY(spot.y);
                                     triggerNotification(`スポット「${spot.name}」を編集モードで読み込みました`);
@@ -608,6 +667,8 @@ export default function AdminTableTab({
                                             setEditingSpotId(null);
                                             setTableSpotName('');
                                             setTableSpotDesc('');
+                                            setTableSpotTags('');
+                                            setTableSpotFloor('1階');
                                             setTableSpotX(50);
                                             setTableSpotY(50);
                                           }
@@ -756,7 +817,7 @@ export default function AdminTableTab({
                   <select
                     value={timetableDay}
                     onChange={(e) => setTimetableDay(Number(e.target.value))}
-                    className="w-full bg-neutral-50 hover:bg-neutral-100/55 focus:bg-white border border-neutral-200 focus:border-indigo-500 text-xs rounded-xl px-3.5 py-2.5 outline-none font-bold"
+                    className="w-full bg-neutral-50 hover:bg-neutral-100/55 focus:bg-white border border-neutral-200 focus:border-indigo-500 text-xs text-neutral-800 rounded-xl px-3.5 py-2.5 outline-none font-bold"
                   >
                     <option value={1}>1日目 (D1)</option>
                     <option value={2}>2日目 (D2)</option>
@@ -771,7 +832,7 @@ export default function AdminTableTab({
                     placeholder="例: 09:00 - 09:30"
                     value={timetableTime}
                     onChange={(e) => setTimetableTime(e.target.value)}
-                    className="w-full bg-neutral-50 hover:bg-neutral-100/50 focus:bg-white border border-neutral-200 focus:border-indigo-500 text-xs rounded-xl px-3.5 py-2.5 outline-none font-mono font-bold"
+                    className="w-full bg-neutral-50 hover:bg-neutral-100/50 focus:bg-white border border-neutral-200 focus:border-indigo-500 text-xs text-neutral-800 rounded-xl px-3.5 py-2.5 outline-none font-mono font-bold"
                   />
                 </div>
                 <div>
@@ -783,7 +844,7 @@ export default function AdminTableTab({
                     placeholder="例: 開祭式・オープニング"
                     value={timetableTitle}
                     onChange={(e) => setTimetableTitle(e.target.value)}
-                    className="w-full bg-neutral-50 hover:bg-neutral-100/50 focus:bg-white border border-neutral-200 focus:border-indigo-500 text-xs rounded-xl px-3.5 py-2.5 outline-none"
+                    className="w-full bg-neutral-50 hover:bg-neutral-100/50 focus:bg-white border border-neutral-200 focus:border-indigo-500 text-xs text-neutral-800 rounded-xl px-3.5 py-2.5 outline-none"
                   />
                 </div>
               </div>
@@ -798,7 +859,7 @@ export default function AdminTableTab({
                     placeholder="例: 第1体育館 (メインステージ)"
                     value={timetableLocation}
                     onChange={(e) => setTimetableLocation(e.target.value)}
-                    className="w-full bg-neutral-50 hover:bg-neutral-100/50 focus:bg-white border border-neutral-200 focus:border-indigo-500 text-xs rounded-xl px-3.5 py-2.5 outline-none"
+                    className="w-full bg-neutral-50 hover:bg-neutral-100/50 focus:bg-white border border-neutral-200 focus:border-indigo-500 text-xs text-neutral-800 rounded-xl px-3.5 py-2.5 outline-none"
                   />
                 </div>
                 <div>
@@ -810,7 +871,7 @@ export default function AdminTableTab({
                     placeholder="例: 全体イベント"
                     value={timetableBadge}
                     onChange={(e) => setTimetableBadge(e.target.value)}
-                    className="w-full bg-neutral-50 hover:bg-neutral-100/50 focus:bg-white border border-neutral-200 focus:border-indigo-500 text-xs rounded-xl px-3.5 py-2.5 outline-none font-bold"
+                    className="w-full bg-neutral-50 hover:bg-neutral-100/50 focus:bg-white border border-neutral-200 focus:border-indigo-500 text-xs text-neutral-800 rounded-xl px-3.5 py-2.5 outline-none font-bold"
                   />
                 </div>
                 <div>
@@ -820,7 +881,7 @@ export default function AdminTableTab({
                   <select
                     value={timetableBadgeColor}
                     onChange={(e) => setTimetableBadgeColor(e.target.value)}
-                    className="w-full bg-neutral-50 hover:bg-neutral-100/55 focus:bg-white border border-neutral-200 focus:border-indigo-500 text-xs rounded-xl px-3.5 py-2.5 outline-none"
+                    className="w-full bg-neutral-50 hover:bg-neutral-100/55 focus:bg-white border border-neutral-200 focus:border-indigo-500 text-xs text-neutral-800 rounded-xl px-3.5 py-2.5 outline-none"
                   >
                     <option value="indigo">藍色Preset (Indigo)</option>
                     <option value="emerald">緑色Preset (Emerald)</option>
@@ -840,7 +901,7 @@ export default function AdminTableTab({
                   value={timetableDescription}
                   onChange={(e) => setTimetableDescription(e.target.value)}
                   rows={2}
-                  className="w-full bg-neutral-50 hover:bg-neutral-100/50 focus:bg-white border border-neutral-200 focus:border-indigo-500 text-xs rounded-xl px-3.5 py-2.5 outline-none resize-none"
+                  className="w-full bg-neutral-50 hover:bg-neutral-100/50 focus:bg-white border border-neutral-200 focus:border-indigo-500 text-xs text-neutral-800 rounded-xl px-3.5 py-2.5 outline-none resize-none"
                 />
               </div>
 
@@ -999,7 +1060,7 @@ export default function AdminTableTab({
                     placeholder="例: りんどう祭 実行委員会本部"
                     value={memberTitle}
                     onChange={(e) => setMemberTitle(e.target.value)}
-                    className="w-full bg-neutral-50 hover:bg-neutral-100/50 focus:bg-white border border-neutral-200 focus:border-indigo-500 text-xs rounded-xl px-3.5 py-2.5 outline-none"
+                    className="w-full bg-neutral-50 hover:bg-neutral-100/50 focus:bg-white border border-neutral-200 focus:border-indigo-500 text-xs text-neutral-800 rounded-xl px-3.5 py-2.5 outline-none"
                   />
                 </div>
                 <div>
@@ -1011,7 +1072,7 @@ export default function AdminTableTab({
                     placeholder="例: 生徒会本部 ＆ 実行委員一同"
                     value={memberSubtitle}
                     onChange={(e) => setMemberSubtitle(e.target.value)}
-                    className="w-full bg-neutral-50 hover:bg-neutral-100/50 focus:bg-white border border-neutral-200 focus:border-indigo-500 text-xs rounded-xl px-3.5 py-2.5 outline-none"
+                    className="w-full bg-neutral-50 hover:bg-neutral-100/50 focus:bg-white border border-neutral-200 focus:border-indigo-500 text-xs text-neutral-800 rounded-xl px-3.5 py-2.5 outline-none"
                   />
                 </div>
                 <div>
@@ -1024,7 +1085,7 @@ export default function AdminTableTab({
                     placeholder="例: 実"
                     value={memberAvatarChar}
                     onChange={(e) => setMemberAvatarChar(e.target.value)}
-                    className="w-full bg-neutral-50 hover:bg-neutral-100/50 focus:bg-white border border-neutral-200 focus:border-indigo-500 text-xs rounded-xl px-3.5 py-2.5 outline-none font-bold text-center"
+                    className="w-full bg-neutral-50 hover:bg-neutral-100/50 focus:bg-white border border-neutral-200 focus:border-indigo-500 text-xs text-neutral-800 rounded-xl px-3.5 py-2.5 outline-none font-bold text-center"
                   />
                 </div>
               </div>
@@ -1037,7 +1098,7 @@ export default function AdminTableTab({
                   <select
                     value={memberColorTheme}
                     onChange={(e) => setMemberColorTheme(e.target.value)}
-                    className="w-full bg-neutral-50 hover:bg-neutral-100/55 focus:bg-white border border-neutral-200 focus:border-indigo-500 text-xs rounded-xl px-3.5 py-2.5 outline-none font-bold"
+                    className="w-full bg-neutral-50 hover:bg-neutral-100/55 focus:bg-white border border-neutral-200 focus:border-indigo-500 text-xs text-neutral-800 rounded-xl px-3.5 py-2.5 outline-none font-bold"
                   >
                     <option value="indigo">藍色 (Indigo)</option>
                     <option value="emerald">緑色 (Emerald)</option>
@@ -1060,7 +1121,7 @@ export default function AdminTableTab({
                   value={memberDescription}
                   onChange={(e) => setMemberDescription(e.target.value)}
                   rows={3}
-                  className="w-full bg-neutral-50 hover:bg-neutral-100/50 focus:bg-white border border-neutral-200 focus:border-indigo-500 text-xs rounded-xl px-3.5 py-2.5 outline-none resize-none"
+                  className="w-full bg-neutral-50 hover:bg-neutral-100/50 focus:bg-white border border-neutral-200 focus:border-indigo-500 text-xs text-neutral-800 rounded-xl px-3.5 py-2.5 outline-none resize-none"
                 />
               </div>
 

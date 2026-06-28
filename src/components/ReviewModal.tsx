@@ -111,7 +111,7 @@ export default function ReviewModal({ spot, onClose, isAdmin, onDeleteSpot }: Re
 
         {/* Modal Header scrollable area */}
         <div className="p-8 pb-4 border-b border-neutral-100/60">
-          <span className={`inline-block text-[10px] font-bold tracking-wider px-3 py-1 rounded-full mb-3 border ${categoryInfo.color}`}>
+          <span className={`inline-block text-xs font-black tracking-wider px-3.5 py-1 rounded-full mb-3 border ${categoryInfo.color}`}>
             {categoryInfo.text}
           </span>
           <div className="flex justify-between items-start gap-4">
@@ -169,10 +169,10 @@ export default function ReviewModal({ spot, onClose, isAdmin, onDeleteSpot }: Re
               <div className="w-10 h-10 rounded-full bg-indigo-50 flex items-center justify-center mb-3 text-indigo-600 border border-indigo-100">
                 <Heart className="w-5 h-5 fill-indigo-100" />
               </div>
-              <p className="text-xs font-bold text-neutral-600">
+              <p className="text-sm font-black text-neutral-800">
                 まだ口コミがありません。
               </p>
-              <p className="text-[11px] text-neutral-400 max-w-sm mt-1 leading-relaxed">
+              <p className="text-xs text-neutral-500 max-w-sm mt-1.5 leading-relaxed">
                 あなたの感想が、りんどう祭の盛り上がりに繋がります！美味しかったおやつ、すごかった劇、応援メッセージなど、最初の口コミを投稿しましょう！
               </p>
             </div>
@@ -183,10 +183,10 @@ export default function ReviewModal({ spot, onClose, isAdmin, onDeleteSpot }: Re
                 {/* Review Header card */}
                 <div className="flex items-center justify-between mb-2">
                   <div className="flex items-center gap-2.5">
-                    <span className="text-[10px] font-black text-indigo-700 bg-indigo-50 border border-indigo-100/50 rounded px-2 py-0.5 scale-95 font-sans">
+                    <span className="text-[11px] font-black text-indigo-700 bg-indigo-50 border border-indigo-100/50 rounded px-2 py-1 font-sans">
                       {review.role}
                     </span>
-                    <span className="text-xs font-bold text-neutral-700">
+                    <span className="text-sm font-bold text-neutral-850">
                       {review.author}
                     </span>
                   </div>
@@ -199,7 +199,7 @@ export default function ReviewModal({ spot, onClose, isAdmin, onDeleteSpot }: Re
                         className={`w-3.5 h-3.5 ${
                           s <= review.rating 
                             ? 'text-amber-500 fill-amber-500' 
-                             : 'text-neutral-200'
+                            : 'text-neutral-200'
                         }`}
                       />
                     ))}
@@ -207,12 +207,12 @@ export default function ReviewModal({ spot, onClose, isAdmin, onDeleteSpot }: Re
                 </div>
 
                 {/* Comment Content */}
-                <p className="text-neutral-600 font-medium text-xs md:text-sm pl-0">
+                <p className="text-neutral-700 font-medium text-sm md:text-sm pl-0">
                   {review.comment}
                 </p>
 
                 {review.createdAt && (
-                  <div className="text-right mt-2 text-[10px] text-neutral-300 font-mono">
+                  <div className="text-right mt-2 text-[11px] text-neutral-450 font-mono">
                     {new Date(review.createdAt).toLocaleDateString()} {new Date(review.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                   </div>
                 )}
@@ -223,7 +223,7 @@ export default function ReviewModal({ spot, onClose, isAdmin, onDeleteSpot }: Re
 
         {/* Bottom Form input wrapper */}
         <div className="p-8 border-t border-neutral-100 bg-white rounded-b-[32px]">
-          <h4 className="text-xs font-bold text-neutral-700 uppercase tracking-wider mb-4">
+          <h4 className="text-sm font-black text-neutral-800 uppercase tracking-wider mb-4">
             新しい口コミ・要望を書き込む
           </h4>
 
@@ -232,7 +232,7 @@ export default function ReviewModal({ spot, onClose, isAdmin, onDeleteSpot }: Re
               
               {/* Star Rating select */}
               <div>
-                <label className="block text-[10px] font-bold text-neutral-400 uppercase tracking-widest mb-1.5">
+                <label className="block text-xs font-bold text-neutral-500 uppercase tracking-widest mb-1.5">
                   おすすめの評価・満足度 <span className="text-red-500">*</span>
                 </label>
                 <div className="flex items-center gap-1 py-1">
@@ -258,13 +258,13 @@ export default function ReviewModal({ spot, onClose, isAdmin, onDeleteSpot }: Re
               {/* Identity Picker */}
               <div className="grid grid-cols-2 gap-2">
                 <div>
-                  <label className="block text-[10px] font-bold text-neutral-400 uppercase tracking-widest mb-1.5">
+                  <label className="block text-xs font-bold text-neutral-500 uppercase tracking-widest mb-1.5">
                     区分 <span className="text-red-500">*</span>
                   </label>
                   <select
                     value={role}
                     onChange={(e: any) => setRole(e.target.value)}
-                    className="w-full px-3 py-2 text-xs rounded-xl border border-neutral-200 focus:outline-none focus:ring-2 focus:ring-indigo-500/10 focus:border-indigo-500"
+                    className="w-full px-3 py-2 text-xs sm:text-sm font-bold rounded-xl border border-neutral-200 focus:outline-none focus:ring-2 focus:ring-indigo-500/10 focus:border-indigo-500 text-neutral-800"
                   >
                     <option value="1年生">1年生</option>
                     <option value="2年生">2年生</option>
@@ -277,7 +277,7 @@ export default function ReviewModal({ spot, onClose, isAdmin, onDeleteSpot }: Re
                   </select>
                 </div>
                 <div>
-                  <label className="block text-[10px] font-bold text-neutral-400 uppercase tracking-widest mb-1.5">
+                  <label className="block text-xs font-bold text-neutral-500 uppercase tracking-widest mb-1.5">
                     お名前 / ペンネーム
                   </label>
                   <input
@@ -286,7 +286,7 @@ export default function ReviewModal({ spot, onClose, isAdmin, onDeleteSpot }: Re
                     onChange={(e) => setAuthor(e.target.value)}
                     placeholder="匿名希望"
                     maxLength={15}
-                    className="w-full px-3 py-2 text-xs rounded-xl border border-neutral-200 focus:outline-none focus:ring-2 focus:ring-indigo-500/10 focus:border-indigo-500 placeholder-neutral-300"
+                    className="w-full px-3 py-2 text-xs sm:text-sm rounded-xl border border-neutral-200 focus:outline-none focus:ring-2 focus:ring-indigo-500/10 focus:border-indigo-500 placeholder-neutral-300 font-bold text-neutral-800 font-medium"
                   />
                 </div>
               </div>
@@ -302,7 +302,7 @@ export default function ReviewModal({ spot, onClose, isAdmin, onDeleteSpot }: Re
                 placeholder="模擬店・展示の感想や、応援メッセージ、良かった点などの口コミをお寄せください。"
                 rows={2}
                 maxLength={400}
-                className="w-full px-4 py-3 text-xs rounded-xl border border-neutral-200 focus:outline-none focus:ring-2 focus:ring-indigo-500/10 focus:border-indigo-500 placeholder-neutral-400 resize-none transition-all duration-200"
+                className="w-full px-4 py-3 text-xs rounded-xl border border-neutral-200 focus:outline-none focus:ring-2 focus:ring-indigo-500/10 focus:border-indigo-500 placeholder-neutral-400 resize-none transition-all duration-200 text-neutral-800 font-medium"
               />
             </div>
 

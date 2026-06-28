@@ -13,20 +13,20 @@ interface MapContainerProps {
   isMobileDrawerExpanded: boolean;
 }
 
-// 筑摩野中学校の航空写真の緯度経度境界（およそ敷地全体をフィットするおよそ0.01%の比率マッピング）
+// 筑摩野中学校の航空写真の緯度経度境界（角丸め回転なし、map.pngそのまんまの範囲）
 const CHIKUMANO_BOUNDS = {
-  north: 36.186100, // マップ画像の上端
-  south: 36.184100, // マップ画像の下端
-  west: 137.964400, // マップ画像の左端
-  east: 137.967150  // マップ画像の右端
+  north: 36.1865067, // マップ画像の上端
+  south: 36.1837736, // マップ画像の下端
+  west: 137.9654683, // マップ画像の左端
+  east: 137.9672745  // マップ画像の右端
 };
 
 // 疑似体験用のシミュレーション（デモGPSスポット）
 const DEMO_LOCATIONS = [
-  { name: 'メイン入場口前', lat: 36.184350, lng: 137.964720, desc: '筑摩野中へのメインゲート。模擬店の甘い香りが漂い、受付テントが設置されています。' },
-  { name: '第1グラウンド（模擬店群）', lat: 36.184850, lng: 137.965400, desc: '焼きそばや綿あめ、ポップコーンなど人気のクラス出店テントがずらりと並んで大賑わいです。' },
-  { name: '体育館（ステージ発表）', lat: 36.185250, lng: 137.965900, desc: '吹奏楽部や有志バンドの熱い演奏、演劇部による迫真の劇が上演中。拍手喝采が響いています。' },
-  { name: '北校舎1階フロア（展示）', lat: 36.185705, lng: 137.966320, desc: '理科の自由研究や、美術の授業、写真部によるフォトギャラリーが美しい照明で展示されています。' },
+  { name: 'メイン入場口前', lat: 36.1843202, lng: 137.9658295, desc: '筑摩野中へのメインゲート。模擬店の甘い香りが漂い、受付テントが設置されています。' },
+  { name: '第1グラウンド（模擬店群）', lat: 36.1848668, lng: 137.9662811, desc: '焼きそばや綿あめ、ポップコーンなど人気のクラス出店テントがずらりと並んで大賑わいです。' },
+  { name: '体育館（ステージ発表）', lat: 36.1852768, lng: 137.9668230, desc: '吹奏楽部や有志バンドの熱い演奏、演劇部による迫真の劇が上演中。拍手喝采が響いています。' },
+  { name: '北校舎1階フロア（展示）', lat: 36.1859601, lng: 137.9670036, desc: '理科 of 自由研究や、美術の授業、写真部によるフォトギャラリーが美しい照明で展示されています。' },
 ];
 
 export default function MapContainer({
@@ -62,6 +62,7 @@ export default function MapContainer({
   const [currentLocation, setCurrentLocation] = useState<{ x: number; y: number; lat: number; lng: number; isInside: boolean } | null>(null);
   const [demoMode, setDemoMode] = useState(false);
   const [demoIndex, setDemoIndex] = useState(0);
+  const [copySuccess, setCopySuccess] = useState(false);
 
   // Auto-shirink map scales
   useEffect(() => {
@@ -132,7 +133,19 @@ export default function MapContainer({
               });
             },
             (error) => {
-              console.warn("Geolocation tracking error:", error);
+              let errorMsg = "位置情報取得エラー: 不明なエラー";
+              switch(error.code) {
+                case error.PERMISSION_DENIED:
+                  errorMsg = "位置情報の利用許可が拒否されました。ブラウザや端末、またはiframeの設定で位置情報を許可してください。";
+                  break;
+                case error.POSITION_UNAVAILABLE:
+                  errorMsg = "位置情報が一時的に利用できません。GPS信号やネットワーク接続を確認してください。";
+                  break;
+                case error.TIMEOUT:
+                  errorMsg = "位置情報の取得がタイムアウトしました。";
+                  break;
+              }
+              console.warn(`[Geolocation] ${errorMsg} (コード ${error.code}: ${error.message})`);
             },
             {
               enableHighAccuracy: true,
@@ -578,11 +591,11 @@ export default function MapContainer({
       {/* Floating Header Panel */}
       <div className="absolute top-4 left-4 z-20 max-w-[calc(100vw-2rem)] bg-white/95 backdrop-blur-md shadow-[0_12px_30px_rgba(109,40,217,0.05)] border border-violet-100/40 p-4 rounded-3xl hidden md:block select-none pointer-events-auto">
         <div className="flex items-center gap-3">
-          <div className="w-8 h-8 rounded-full bg-violet-50 flex items-center justify-center border border-violet-100/80 text-violet-650 animate-pulse">
+          <div className="w-8 h-8 rounded-full bg-violet-50 flex items-center justify-center border border-violet-100/80 text-violet-600 animate-pulse">
             <Compass className="w-4 h-4" />
           </div>
           <div>
-            <h3 className="text-xs font-bold text-neutral-805 tracking-tight font-display">
+            <h3 className="text-xs font-bold text-neutral-800 tracking-tight font-display">
               筑摩野中 りんどう祭校内マップ
             </h3>
             <p className="text-[9px] text-neutral-400 mt-1 font-medium leading-relaxed flex items-center gap-1.5">
@@ -632,13 +645,14 @@ export default function MapContainer({
           onTouchStart={handleTouchStart}
           onTouchMove={handleTouchMove}
           onTouchEnd={handleTouchEnd}
-          className={`relative transition-all duration-[600ms] ease-out select-none shadow-[0_20px_50px_rgba(0,0,0,0.1)] rounded-[24px] border-4 border-white bg-white group overflow-hidden touch-none ${
+          className={`relative select-none shadow-[0_20px_50px_rgba(0,0,0,0.1)] rounded-[24px] border-4 border-white bg-white group overflow-hidden touch-none ${
             isAdmin ? 'cursor-crosshair' : 'cursor-default'
           }`}
           style={{
             width: `${canvasWidth}px`,
             height: `${canvasHeight}px`,
             transform: `rotate(${rotation}deg)`,
+            transition: 'transform 600ms cubic-bezier(0.16, 1, 0.3, 1)',
           }}
         >
           
@@ -648,6 +662,7 @@ export default function MapContainer({
             style={{
               transform: `translate(${zoom.x}px, ${zoom.y}px) scale(${zoom.scale})`,
               transformOrigin: 'center center',
+              transition: isPanning ? 'none' : 'transform 500ms cubic-bezier(0.16, 1, 0.3, 1)',
             }}
           >
             {/* Main School Map Image */}
@@ -685,6 +700,7 @@ export default function MapContainer({
                     left: `${spot.x}%`,
                     top: `${spot.y}%`,
                     transform: `translate(-50%, -50%) rotate(${-rotation}deg) scale(${1 / Math.max(1, zoom.scale)})`,
+                    transition: isPanning ? 'none' : 'transform 500ms cubic-bezier(0.16, 1, 0.3, 1)',
                   }}
                   onClick={(e) => {
                     e.stopPropagation();
@@ -721,6 +737,7 @@ export default function MapContainer({
                   left: `${currentLocation.x}%`,
                   top: `${currentLocation.y}%`,
                   transform: `translate(-50%, -50%) rotate(${-rotation}deg) scale(${1 / Math.max(1, zoom.scale)})`,
+                  transition: isPanning ? 'none' : 'transform 500ms cubic-bezier(0.16, 1, 0.3, 1)',
                 }}
                 className="absolute z-30"
               >
@@ -729,7 +746,7 @@ export default function MapContainer({
                 <div className="absolute -inset-2.5 rounded-full bg-violet-400/40 animate-pulse scale-110 pointer-events-none" />
                 
                 <div 
-                  className="w-6.5 h-6.5 rounded-full bg-violet-600 border-[2.5px] border-white text-white flex items-center justify-center shadow-lg relative cursor-pointer hover:bg-violet-750 active:scale-95 transition-all"
+                  className="w-6.5 h-6.5 rounded-full bg-violet-600 border-[2.5px] border-white text-white flex items-center justify-center shadow-lg relative cursor-pointer hover:bg-violet-700 active:scale-95 transition-all"
                   onClick={(e) => {
                     e.stopPropagation();
                     handleFocusOnUser();
@@ -776,33 +793,68 @@ export default function MapContainer({
 
       {/* Floating GPS Status & Demo controller Panel (Bottom Left Overlay) */}
       {gpsEnabled && (
-        <div className="absolute bottom-4 left-4 z-20 flex flex-col gap-2.5 pointer-events-auto select-none max-w-[280px]">
+        <div className="absolute bottom-4 left-4 z-20 flex flex-col gap-2.5 pointer-events-auto select-none w-full max-w-[290px] xs:max-w-[320px]">
           {/* Quick tracker panel */}
-          <div className="bg-white/95 backdrop-blur-md shadow-[0_12px_24px_rgba(0,0,0,0.06)] border border-violet-100/40 p-3 rounded-2xl flex flex-col gap-1.5">
+          <div className="bg-white/95 backdrop-blur-md shadow-[0_12px_24px_rgba(0,0,0,0.06)] border border-violet-100/40 p-3.5 rounded-2xl flex flex-col gap-2">
             <div className="flex items-center justify-between gap-3">
               <div className="flex items-center gap-1.5">
-                <Locate className="w-3.5 h-3.5 text-violet-650 animate-pulse" />
-                <span className="text-[10px] font-black text-neutral-800">GPS位置追跡システム</span>
+                <Locate className="w-4 h-4 text-violet-600 animate-pulse" />
+                <span className="text-xs sm:text-sm font-black text-neutral-800">GPS位置追跡システム</span>
               </div>
-              <span className="text-[8px] bg-emerald-100 text-emerald-800 px-1.5 py-0.5 rounded-full font-bold uppercase tracking-wider scale-90">
+              <span className="text-[10px] bg-emerald-100 text-emerald-800 px-2 py-0.5 rounded-full font-black uppercase tracking-wider">
                 受信中
               </span>
             </div>
 
             {/* Coords state output */}
             {currentLocation ? (
-              <div className="space-y-1">
-                <div className="text-[8.5px] text-neutral-500 leading-normal">
+              <div className="space-y-2 text-left">
+                <div className="text-xs text-neutral-600 leading-normal">
                   {currentLocation.isInside ? (
-                    <span className="text-emerald-700 font-bold">● 筑摩野中学校の校内に到着しています</span>
+                    <span className="text-emerald-800 font-bold bg-emerald-500/10 border border-emerald-500/20 px-2.5 py-1.5 rounded-lg block">● 筑摩野中学校の校内に到着しています</span>
                   ) : (
-                    <span className="text-amber-800 font-medium">▲ 現在、中学校の外にいます（デモ切替推奨）</span>
+                    <span className="text-amber-800 font-extrabold bg-amber-500/10 border border-amber-500/20 px-2.5 py-1.5 rounded-lg block leading-normal">
+                      ▲ 現在、中学校の校外（範囲外）にいます
+                    </span>
                   )}
                 </div>
-                <div className="flex gap-2 text-[8px] text-neutral-400 font-mono">
+                
+                <div className="flex gap-2 text-[10px] sm:text-xs text-neutral-500 font-mono font-bold">
                   <span>Lat: {parseFloat(currentLocation.lat.toFixed(5))}</span>
                   <span>Lng: {parseFloat(currentLocation.lng.toFixed(5))}</span>
                 </div>
+
+                {!currentLocation.isInside && (
+                  <div className="bg-amber-50/50 border border-amber-200/50 rounded-xl p-3 space-y-2 mt-1">
+                    <div className="text-[10px] sm:text-xs font-black uppercase text-amber-900 tracking-wider">
+                      位置座標コピー（現地調整用）
+                    </div>
+                    <div className="flex items-center justify-between text-[11px] sm:text-xs font-mono bg-white border border-amber-200/40 rounded-lg p-2 gap-2 select-text font-bold text-neutral-800">
+                      <span className="truncate">
+                        {currentLocation.lat.toFixed(7)}, {currentLocation.lng.toFixed(7)}
+                      </span>
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          const txt = `${currentLocation.lat.toFixed(7)}, ${currentLocation.lng.toFixed(7)}`;
+                          navigator.clipboard.writeText(txt).then(() => {
+                            setCopySuccess(true);
+                            setTimeout(() => setCopySuccess(false), 2000);
+                          }).catch(() => {
+                            alert("コピーできませんでした。以下をコピーしてください: " + txt);
+                          });
+                        }}
+                        className={`px-2.5 py-1.5 rounded-lg text-[10px] sm:text-xs font-black transition-all shrink-0 cursor-pointer ${
+                          copySuccess 
+                            ? 'bg-emerald-600 text-white shadow-xs' 
+                            : 'bg-amber-100 hover:bg-amber-200 text-amber-800'
+                        }`}
+                      >
+                        {copySuccess ? 'コピー済' : 'コピー'}
+                      </button>
+                    </div>
+                  </div>
+                )}
               </div>
             ) : (
               <span className="text-[8.5px] text-neutral-400 font-medium">現在位置を検索しています...</span>
@@ -812,9 +864,9 @@ export default function MapContainer({
             {currentLocation && (
               <button
                 onClick={handleFocusOnUser}
-                className="w-full bg-violet-650 hover:bg-violet-750 text-white font-bold text-[8.5px] py-1.5 px-2 rounded-lg transition-colors flex items-center justify-center gap-1 cursor-pointer shadow-xs"
+                className="w-full bg-violet-600 hover:bg-violet-700 text-white font-bold text-xs py-2 px-3 rounded-xl transition-colors flex items-center justify-center gap-1.5 cursor-pointer shadow-md shadow-violet-500/10"
               >
-                <Navigation className="w-2.5 h-2.5" />
+                <Navigation className="w-3.5 h-3.5" />
                 <span>自分の場所へマップを移動</span>
               </button>
             )}
